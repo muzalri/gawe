@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Between Island and Snow</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💗</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/globe.gl"></script>
     <style>
@@ -955,6 +956,332 @@
         .letter-section .section-subtitle {
             color: #999;
             margin-bottom: 2.5rem;
+        }
+
+        /* ============ PHOTO BOOTH SECTION ============ */
+        .photobooth-section {
+            min-height: 100vh;
+            padding: 5rem 2rem;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photobooth-section .section-title {
+            color: #ffffff;
+        }
+
+        .photobooth-section .section-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+        }
+
+        .live-booth-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .booth-frame {
+            background: linear-gradient(145deg, #1e1e3a, #1a1a30);
+            border: 3px solid var(--pink);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 0 40px rgba(225, 142, 150, 0.15), inset 0 0 30px rgba(0,0,0,0.3);
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #boothCameraFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        #boothCanvas {
+            display: none;
+        }
+
+        .camera-placeholder {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 3rem;
+            gap: 0.5rem;
+        }
+
+        .camera-placeholder span {
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Countdown overlay */
+        .booth-countdown {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .booth-countdown span {
+            font-size: 5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 30px rgba(225, 142, 150, 0.8);
+            animation: countdownPop 1s ease-in-out;
+        }
+
+        @keyframes countdownPop {
+            0% { transform: scale(2); opacity: 0; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.7; }
+        }
+
+        /* Flash */
+        .booth-flash {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 11;
+            transition: opacity 0.15s ease;
+        }
+
+        .booth-flash.active {
+            opacity: 1;
+        }
+
+        /* Photo counter badge */
+        .booth-photo-counter {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(225, 142, 150, 0.9);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 5;
+            display: none;
+        }
+
+        /* Controls */
+        .booth-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+
+        .booth-action-btns {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .booth-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .booth-btn-start {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(49, 130, 189, 0.4);
+        }
+
+        .booth-btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(49, 130, 189, 0.6);
+        }
+
+        .booth-btn-capture {
+            background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 142, 150, 0.4);
+        }
+
+        .booth-btn-capture:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(225, 142, 150, 0.6);
+        }
+
+        .booth-btn-capture:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .booth-btn-retake {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            color: white;
+        }
+
+        .booth-btn-retake:hover {
+            transform: translateY(-2px);
+        }
+
+        .booth-btn-download {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .booth-btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+        }
+
+        /* Filter buttons */
+        .booth-filter-row {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .booth-filter-row p {
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .booth-filter-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .booth-filter-btn:hover {
+            border-color: var(--pink-light);
+            color: white;
+        }
+
+        .booth-filter-btn.active {
+            background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+            border-color: var(--pink);
+            color: white;
+        }
+
+        /* Timer option */
+        .booth-timer-option {
+            text-align: center;
+        }
+
+        .booth-timer-option label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .booth-timer-option input[type="checkbox"] {
+            accent-color: var(--pink);
+        }
+
+        /* CSS Cam filters */
+        #boothCameraFeed.warm { filter: sepia(0.3) saturate(1.3) brightness(1.1); }
+        #boothCameraFeed.pink { filter: saturate(1.2) hue-rotate(-10deg) brightness(1.05); }
+        #boothCameraFeed.vintage { filter: sepia(0.4) contrast(0.9) brightness(1.1); }
+        #boothCameraFeed.bw { filter: grayscale(1) contrast(1.1); }
+        #boothCameraFeed.cold { filter: saturate(0.8) hue-rotate(15deg) brightness(1.05); }
+
+        /* 2x2 Grid preview */
+        .booth-grid-preview {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .booth-grid-preview h3 {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .booth-grid-frame {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .booth-grid-photo {
+            aspect-ratio: 1;
+            background: #f0e8e8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid #f0d0d5;
+        }
+
+        .booth-grid-photo span {
+            font-size: 1.5rem;
+            color: #dbb;
+            font-weight: 700;
+        }
+
+        .booth-grid-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .booth-grid-photo.filled {
+            border-color: var(--pink);
+        }
+
+        .booth-grid-watermark {
+            text-align: center;
+            padding: 8px 0 4px;
+            grid-column: 1 / -1;
+            font-family: 'Dancing Script', cursive;
+            font-size: 0.9rem;
+            color: var(--pink-dark);
         }
 
         /* Envelope */
@@ -1999,6 +2326,70 @@
             <p class="hero-message reveal" style="margin-top: 1rem;">Lolo & Jojo — between island and snow, our love keeps growing 🌺❄️</p>
         </section>
 
+        <!-- Photo Booth Section -->
+        <section class="photobooth-section" id="photo-booth">
+            <h2 class="section-title reveal">Photo Booth</h2>
+            <div class="hero-divider reveal" style="margin: 1rem auto;"></div>
+            <p class="section-subtitle reveal">Take 4 photos together and create your own memory strip 📸</p>
+
+            <div class="live-booth-container reveal">
+                <div class="booth-frame">
+                    <div class="camera-container">
+                        <video id="boothCameraFeed" autoplay playsinline></video>
+                        <canvas id="boothCanvas"></canvas>
+                        <div class="camera-placeholder" id="boothPlaceholder">
+                            📷
+                            <span>Tap "Start Camera" to begin</span>
+                        </div>
+                        <div class="booth-countdown" id="boothCountdown"><span>3</span></div>
+                        <div class="booth-flash" id="boothFlash"></div>
+                        <div class="booth-photo-counter" id="boothPhotoCounter">
+                            <span id="boothPhotoNum">1</span> / 4
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="booth-controls">
+                    <div class="booth-action-btns">
+                        <button class="booth-btn booth-btn-start" id="boothStartBtn" onclick="boothStartCamera()">📷 Start Camera</button>
+                        <button class="booth-btn booth-btn-capture" id="boothCaptureBtn" style="display:none;" onclick="boothCapture()">📸 Capture <span id="boothCaptureCount">(1/4)</span></button>
+                        <button class="booth-btn booth-btn-retake" id="boothRetakeBtn" style="display:none;" onclick="boothReset()">🔄 Retake</button>
+                        <button class="booth-btn booth-btn-download" id="boothDownloadBtn" style="display:none;" onclick="boothDownload()">💾 Download</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="booth-filter-row">
+                        <p>Choose Filter:</p>
+                        <button class="booth-filter-btn active" data-booth-filter="none">Normal</button>
+                        <button class="booth-filter-btn" data-booth-filter="warm">Warm 🌅</button>
+                        <button class="booth-filter-btn" data-booth-filter="pink">Pink 💕</button>
+                        <button class="booth-filter-btn" data-booth-filter="vintage">Vintage 📷</button>
+                        <button class="booth-filter-btn" data-booth-filter="bw">B&W 🖤</button>
+                        <button class="booth-filter-btn" data-booth-filter="cold">Cold ❄️</button>
+                    </div>
+
+                    <!-- Timer -->
+                    <div class="booth-timer-option">
+                        <label><input type="checkbox" id="boothUseTimer" checked> Use 3-second timer</label>
+                    </div>
+                </div>
+
+                <!-- 2x2 Grid preview -->
+                <div class="booth-grid-preview" id="boothGridPreview">
+                    <h3>📸 Your Photo Strip</h3>
+                    <div class="booth-grid-frame" id="boothGridFrame">
+                        <div class="booth-grid-photo" id="boothGrid1"><span>1</span></div>
+                        <div class="booth-grid-photo" id="boothGrid2"><span>2</span></div>
+                        <div class="booth-grid-photo" id="boothGrid3"><span>3</span></div>
+                        <div class="booth-grid-photo" id="boothGrid4"><span>4</span></div>
+                        <div class="booth-grid-watermark">💕 Between Island and Snow 💕</div>
+                    </div>
+                    <canvas id="boothGridCanvas" style="display:none;"></canvas>
+                </div>
+            </div>
+        </section>
+
         <!-- Love Letter Section -->
         <section class="letter-section" id="love-letter">
             <h2 class="section-title reveal">A Letter For You</h2>
@@ -2738,6 +3129,272 @@
                 h.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
                 container.appendChild(h);
             }
+        }
+
+        // ============ PHOTO BOOTH LOGIC ============
+        let boothStream = null;
+        let boothFilter = 'none';
+        let boothPhotos = [];
+        let boothIndex = 0;
+
+        // Filter buttons
+        document.querySelectorAll('.booth-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.booth-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                boothFilter = btn.dataset.boothFilter;
+                const video = document.getElementById('boothCameraFeed');
+                video.className = '';
+                if (boothFilter !== 'none') video.classList.add(boothFilter);
+            });
+        });
+
+        async function boothStartCamera() {
+            try {
+                boothStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+                });
+                const video = document.getElementById('boothCameraFeed');
+                video.srcObject = boothStream;
+
+                // Reset
+                boothPhotos = [];
+                boothIndex = 0;
+                boothUpdateGrid();
+                boothUpdateCounter();
+
+                document.getElementById('boothPlaceholder').style.display = 'none';
+                document.getElementById('boothStartBtn').style.display = 'none';
+                document.getElementById('boothCaptureBtn').style.display = 'flex';
+                document.getElementById('boothPhotoCounter').style.display = 'block';
+                document.getElementById('boothGridPreview').style.display = 'block';
+                document.getElementById('boothRetakeBtn').style.display = 'none';
+                document.getElementById('boothDownloadBtn').style.display = 'none';
+            } catch (err) {
+                alert('Cannot access camera. Please allow camera permission.');
+                console.error('Camera error:', err);
+            }
+        }
+
+        function boothCapture() {
+            const useTimer = document.getElementById('boothUseTimer').checked;
+            if (useTimer) {
+                boothCountdown();
+            } else {
+                boothTakePhoto();
+            }
+        }
+
+        function boothCountdown() {
+            const cdEl = document.getElementById('boothCountdown');
+            const captureBtn = document.getElementById('boothCaptureBtn');
+            let count = 3;
+            captureBtn.disabled = true;
+            cdEl.style.display = 'flex';
+            cdEl.querySelector('span').textContent = count;
+
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    cdEl.querySelector('span').textContent = count;
+                    cdEl.querySelector('span').style.animation = 'none';
+                    cdEl.querySelector('span').offsetHeight;
+                    cdEl.querySelector('span').style.animation = 'countdownPop 1s ease-in-out';
+                } else {
+                    clearInterval(interval);
+                    cdEl.style.display = 'none';
+                    captureBtn.disabled = false;
+                    boothTakePhoto();
+                }
+            }, 1000);
+        }
+
+        function boothTakePhoto() {
+            const video = document.getElementById('boothCameraFeed');
+            const canvas = document.getElementById('boothCanvas');
+            const ctx = canvas.getContext('2d');
+            const flash = document.getElementById('boothFlash');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Flash
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 300);
+
+            // Draw mirrored
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            // Apply filter
+            boothApplyFilter(ctx, canvas.width, canvas.height);
+
+            // Save
+            boothPhotos.push(canvas.toDataURL('image/png'));
+            boothIndex++;
+
+            boothUpdateGrid();
+            boothUpdateCounter();
+
+            if (boothIndex >= 4) {
+                document.getElementById('boothCaptureBtn').style.display = 'none';
+                document.getElementById('boothRetakeBtn').style.display = 'flex';
+                document.getElementById('boothDownloadBtn').style.display = 'flex';
+                document.getElementById('boothPhotoCounter').style.display = 'none';
+                boothGenerateCanvas();
+            } else {
+                const useTimer = document.getElementById('boothUseTimer').checked;
+                if (useTimer) {
+                    setTimeout(() => boothCountdown(), 500);
+                }
+            }
+        }
+
+        function boothApplyFilter(ctx, w, h) {
+            if (boothFilter === 'none') return;
+            const img = ctx.getImageData(0, 0, w, h);
+            const d = img.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const r = d[i], g = d[i+1], b = d[i+2];
+                switch(boothFilter) {
+                    case 'warm':
+                        d[i] = Math.min(255, r * 1.1);
+                        d[i+2] = Math.max(0, b * 0.9);
+                        break;
+                    case 'pink':
+                        d[i] = Math.min(255, r * 1.1);
+                        d[i+1] = g * 0.95;
+                        d[i+2] = Math.min(255, b * 1.05);
+                        break;
+                    case 'vintage':
+                        d[i] = r * 0.9 + 40;
+                        d[i+1] = g * 0.8 + 20;
+                        d[i+2] = b * 0.7;
+                        break;
+                    case 'bw':
+                        const gray = r * 0.299 + g * 0.587 + b * 0.114;
+                        d[i] = d[i+1] = d[i+2] = gray;
+                        break;
+                    case 'cold':
+                        d[i] = Math.max(0, r * 0.9);
+                        d[i+2] = Math.min(255, b * 1.15);
+                        break;
+                }
+            }
+            ctx.putImageData(img, 0, 0);
+        }
+
+        function boothUpdateCounter() {
+            const num = document.getElementById('boothPhotoNum');
+            const count = document.getElementById('boothCaptureCount');
+            if (num) num.textContent = Math.min(boothIndex + 1, 4);
+            if (count) count.textContent = `(${Math.min(boothIndex + 1, 4)}/4)`;
+        }
+
+        function boothUpdateGrid() {
+            for (let i = 0; i < 4; i++) {
+                const el = document.getElementById(`boothGrid${i + 1}`);
+                if (boothPhotos[i]) {
+                    el.innerHTML = `<img src="${boothPhotos[i]}" alt="Photo ${i+1}">`;
+                    el.classList.add('filled');
+                } else {
+                    el.innerHTML = `<span>${i + 1}</span>`;
+                    el.classList.remove('filled');
+                }
+            }
+        }
+
+        function boothRoundedRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function boothGenerateCanvas() {
+            const gc = document.getElementById('boothGridCanvas');
+            const ctx = gc.getContext('2d');
+
+            const ps = 400, gap = 10, pad = 20, hdr = 55, ftr = 55;
+            gc.width = ps * 2 + gap + pad * 2;
+            gc.height = hdr + ps * 2 + gap + ftr + pad * 2;
+
+            // Background
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, gc.width, gc.height);
+
+            // Header
+            ctx.fillStyle = '#c46a73';
+            ctx.font = 'bold 28px Dancing Script, cursive, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('💕 Between Island and Snow 💕', gc.width / 2, 38);
+
+            const positions = [
+                { x: pad, y: hdr + pad },
+                { x: pad + ps + gap, y: hdr + pad },
+                { x: pad, y: hdr + pad + ps + gap },
+                { x: pad + ps + gap, y: hdr + pad + ps + gap }
+            ];
+
+            const loadAll = boothPhotos.map((src, idx) => new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    const pos = positions[idx];
+                    const ia = img.width / img.height;
+                    let sx = 0, sy = 0, sw = img.width, sh = img.height;
+                    if (ia > 1) { sw = img.height; sx = (img.width - sw) / 2; }
+                    else { sh = img.width; sy = (img.height - sh) / 2; }
+
+                    ctx.save();
+                    boothRoundedRect(ctx, pos.x, pos.y, ps, ps, 10);
+                    ctx.clip();
+                    ctx.drawImage(img, sx, sy, sw, sh, pos.x, pos.y, ps, ps);
+                    ctx.restore();
+
+                    ctx.strokeStyle = '#E18E96';
+                    ctx.lineWidth = 3;
+                    boothRoundedRect(ctx, pos.x, pos.y, ps, ps, 10);
+                    ctx.stroke();
+                    resolve();
+                };
+                img.src = src;
+            }));
+
+            Promise.all(loadAll).then(() => {
+                ctx.fillStyle = '#c46a73';
+                ctx.font = 'bold 20px Dancing Script, cursive, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('💕 Lolo & Jojo — September 9, 2025 💕', gc.width / 2, gc.height - 20);
+            });
+        }
+
+        function boothDownload() {
+            const gc = document.getElementById('boothGridCanvas');
+            const a = document.createElement('a');
+            a.download = 'island-and-snow-photobooth.png';
+            a.href = gc.toDataURL('image/png');
+            a.click();
+        }
+
+        function boothReset() {
+            boothPhotos = [];
+            boothIndex = 0;
+            boothUpdateGrid();
+            boothUpdateCounter();
+
+            document.getElementById('boothCaptureBtn').style.display = 'flex';
+            document.getElementById('boothRetakeBtn').style.display = 'none';
+            document.getElementById('boothDownloadBtn').style.display = 'none';
+            document.getElementById('boothPhotoCounter').style.display = 'block';
         }
     </script>
 </body>
