@@ -763,16 +763,46 @@
             letter-spacing: 2px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            .globe-section {
+                padding: 3rem 1rem 2rem;
+            }
             .globe-container {
-                height: 350px;
+                height: 300px;
+                max-width: 100%;
+                border-radius: 12px;
             }
             .distance-info {
                 flex-direction: column;
+                align-items: center;
+                gap: 0;
+            }
+            .distance-card {
+                padding: 0.8rem 1.2rem;
+                width: 100%;
+                max-width: 280px;
             }
             .distance-line {
-                transform: rotate(90deg);
+                flex-direction: column;
+                transform: none;
                 margin: 0.5rem 0;
+                gap: 0.3rem;
+            }
+            .distance-dash {
+                width: 2px;
+                height: 20px;
+                background: linear-gradient(180deg, var(--pink), var(--blue-light));
+            }
+            .distance-value {
+                font-size: 0.95rem;
+                writing-mode: horizontal-tb;
+            }
+            .distance-quote {
+                font-size: 0.85rem;
+                padding: 0 0.5rem;
+            }
+            .distance-date {
+                font-size: 0.75rem;
             }
         }
 
@@ -1058,11 +1088,139 @@
         }
 
         /* ====== RESPONSIVE ====== */
-        @media (max-width: 600px) {
-            .padlock-wrapper { transform: scale(0.8); }
-            .mascot-cards { grid-template-columns: 1fr; }
-            .countdown-item { min-width: 75px; padding: 1rem 0.8rem; }
-            .philosophy-details { grid-template-columns: 1fr; }
+        @media (max-width: 768px) {
+            /* Lock Screen */
+            .lock-title {
+                font-size: 1.5rem;
+                padding: 0 1.5rem;
+            }
+            .lock-subtitle {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .padlock-wrapper {
+                transform: scale(0.7);
+                margin-bottom: 1.5rem;
+            }
+            .password-input {
+                width: 200px;
+                padding: 12px 20px;
+                font-size: 1rem;
+                letter-spacing: 8px;
+            }
+            .unlock-btn {
+                padding: 10px 36px;
+                font-size: 0.85rem;
+            }
+
+            /* Hero */
+            .hero {
+                min-height: 80vh;
+                padding: 2rem 1.5rem;
+            }
+            .hero-deco-left, .hero-deco-right {
+                display: none;
+            }
+
+            /* Mascot Section */
+            .mascot-section {
+                padding: 3rem 1rem;
+            }
+            .mascot-image-container img {
+                width: 300px;
+                border-radius: 16px;
+            }
+            .mascot-cards {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .mascot-card {
+                padding: 2rem 1.5rem;
+            }
+            .mascot-emoji img {
+                width: 90px;
+                height: 90px;
+            }
+
+            /* Philosophy */
+            .philosophy-section {
+                padding: 3rem 1rem;
+            }
+            .philosophy-details {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .philosophy-item {
+                padding: 1.5rem;
+            }
+
+            /* Countdown */
+            .countdown-section {
+                padding: 3rem 1rem;
+            }
+            .countdown-item {
+                min-width: 70px;
+                padding: 1rem 0.6rem;
+            }
+            .countdown-number {
+                font-size: 1.8rem;
+            }
+            .countdown-label {
+                font-size: 0.7rem;
+                letter-spacing: 1px;
+            }
+            .years-label {
+                font-size: 0.95rem;
+            }
+
+            /* Message & Footer */
+            .message-section {
+                padding: 3rem 1.5rem;
+            }
+            .message-heart {
+                font-size: 2.5rem;
+            }
+            .footer {
+                padding: 1.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            .footer .names {
+                font-size: 1.1rem;
+            }
+
+            /* Global */
+            .section-title {
+                font-size: 1.5rem;
+                margin-bottom: 0.8rem;
+            }
+            .section-subtitle {
+                font-size: 0.85rem;
+                margin-bottom: 2rem;
+                padding: 0 0.5rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .padlock-wrapper {
+                transform: scale(0.6);
+            }
+            .password-input {
+                width: 180px;
+                font-size: 0.9rem;
+            }
+            .globe-container {
+                height: 250px;
+            }
+            .countdown-item {
+                min-width: 60px;
+                padding: 0.8rem 0.5rem;
+            }
+            .countdown-number {
+                font-size: 1.5rem;
+            }
+            .mascot-image-container img {
+                width: 250px;
+            }
         }
     </style>
 </head>
@@ -1799,8 +1957,8 @@
 
             // Labels
             const labelsData = [
-                { lat: indonesia.lat, lng: indonesia.lng, text: 'Lolo 🌺', color: '#E18E96', size: 1.5 },
-                { lat: slovenia.lat,  lng: slovenia.lng,  text: 'Jojo ❄️',  color: '#5da4d9', size: 1.5 }
+                { lat: indonesia.lat, lng: indonesia.lng, text: 'Lolo', color: '#E18E96', size: 1.5 },
+                { lat: slovenia.lat,  lng: slovenia.lng,  text: 'Jojo',  color: '#5da4d9', size: 1.5 }
             ];
 
             const w = container.clientWidth;
