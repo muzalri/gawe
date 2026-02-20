@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Between Island and Snow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #3182BD;
+            --blue-light: #5da4d9;
+            --blue-dark: #1e5a8a;
+            --pink: #E18E96;
+            --pink-light: #f0b8bd;
+            --pink-dark: #c46a73;
+            --snow: #f0f4f8;
+            --island: #fff5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: var(--snow);
+        }
+
+        /* ============ LOCK SCREEN ============ */
+        #lock-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--pink-light) 0%, var(--snow) 50%, var(--blue-light) 100%);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #lock-screen.unlocked {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
+        #lock-screen.hidden {
+            display: none;
+        }
+
+        .lock-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--blue-dark);
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeInDown 1s ease forwards 0.3s;
+            text-align: center;
+            padding: 0 1rem;
+        }
+
+        .lock-subtitle {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2rem;
+            color: var(--pink-dark);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInDown 1s ease forwards 0.6s;
+        }
+
+        /* SVG Padlock */
+        .padlock-container {
+            position: relative;
+            width: 120px;
+            height: 160px;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.5s;
+            cursor: pointer;
+        }
+
+        .padlock-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(49, 130, 189, 0.4);
+        }
+
+        .keyhole {
+            width: 14px;
+            height: 14px;
+            background: var(--snow);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .keyhole::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 14px;
+            background: var(--snow);
+            border-radius: 0 0 3px 3px;
+        }
+
+        .padlock-shackle {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 56px;
+            height: 60px;
+            border: 8px solid var(--blue);
+            border-bottom: none;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: right bottom;
+        }
+
+        .padlock-container.unlocking .padlock-shackle {
+            transform: translateX(-50%) rotate(-30deg) translateY(-10px);
+        }
+
+        .padlock-container.shake {
+            animation: shake 0.5s ease;
+        }
+
+        /* Floating particles on lock screen */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .particle.snow-p {
+            background: var(--blue-light);
+            animation: floatSnow linear infinite;
+        }
+
+        .particle.island-p {
+            background: var(--pink);
+            animation: floatIsland linear infinite;
+        }
+
+        .password-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.8s;
+        }
+
+        .password-input {
+            width: 220px;
+            padding: 12px 20px;
+            border: 2px solid rgba(49, 130, 189, 0.3);
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            outline: none;
+            transition: all 0.3s ease;
+            letter-spacing: 8px;
+            color: var(--blue-dark);
+        }
+
+        .password-input::placeholder {
+            letter-spacing: 2px;
+            color: #aaa;
+        }
+
+        .password-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 20px rgba(49, 130, 189, 0.2);
+        }
+
+        .password-input.error {
+            border-color: #e74c3c;
+            animation: shake 0.5s ease;
+        }
+
+        .unlock-btn {
+            padding: 10px 40px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(49, 130, 189, 0.3);
+        }
+
+        .unlock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(49, 130, 189, 0.4);
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            height: 20px;
+            transition: opacity 0.3s;
+        }
+
+        /* ============ SPARKLE EFFECT ON UNLOCK ============ */
+        .sparkle-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: sparkleAnim 1.5s ease forwards;
+        }
+
+        /* ============ DASHBOARD ============ */
+        #dashboard {
+            opacity: 0;
+            transition: opacity 1s ease;
+            min-height: 100vh;
+        }
+
+        #dashboard.visible {
+            opacity: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, var(--island) 0%, var(--snow) 30%, var(--snow) 70%, #e8eef5 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 20%, rgba(225, 142, 150, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(49, 130, 189, 0.08) 0%, transparent 50%);
+            animation: rotateGradient 20s linear infinite;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--blue-dark);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-title .island-text {
+            color: var(--pink-dark);
+        }
+
+        .hero-title .snow-text {
+            color: var(--blue);
+        }
+
+        .hero-message {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--pink);
+            margin-top: 1rem;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--pink), var(--blue));
+            margin: 1.5rem 0;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--blue-light);
+            font-size: 0.85rem;
+            opacity: 0;
+            animation: bounce 2s ease infinite 2s;
+            z-index: 1;
+        }
+
+        .scroll-indicator svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--blue-light);
+        }
+
+        /* ============ MASCOT SECTION ============ */
+        .mascot-section {
+            padding: 5rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--blue-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 0.95rem;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .mascot-image-container {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .mascot-image-container img {
+            max-width: 100%;
+            width: 500px;
+            border-radius: 20px;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
+        }
+
+        .mascot-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .mascot-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .mascot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .mascot-card.lolo {
+            border-top: 4px solid var(--pink);
+        }
+
+        .mascot-card.lolo::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(225, 142, 150, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .mascot-card.jojo {
+            border-top: 4px solid var(--blue);
+        }
+
+        .mascot-card.jojo::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(49, 130, 189, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .mascot-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .mascot-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .mascot-card.lolo .mascot-name {
+            color: var(--pink-dark);
+        }
+
+        .mascot-card.jojo .mascot-name {
+            color: var(--blue-dark);
+        }
+
+        .mascot-title-tag {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        .mascot-card.lolo .mascot-title-tag {
+            background: rgba(225, 142, 150, 0.15);
+            color: var(--pink-dark);
+        }
+
+        .mascot-card.jojo .mascot-title-tag {
+            background: rgba(49, 130, 189, 0.15);
+            color: var(--blue-dark);
+        }
+
+        .mascot-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .mascot-stat {
+            font-size: 0.8rem;
+            padding: 5px 12px;
+            border-radius: 15px;
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        .mascot-desc {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        /* ============ PHILOSOPHY SECTION ============ */
+        .philosophy-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, rgba(225, 142, 150, 0.05) 0%, rgba(49, 130, 189, 0.05) 100%);
+        }
+
+        .philosophy-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .philosophy-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            font-style: italic;
+            color: #555;
+            line-height: 1.8;
+            position: relative;
+            padding: 2rem 0;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .philosophy-quote::before {
+            content: '"';
+            font-size: 4rem;
+            color: var(--pink-light);
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .philosophy-details {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .philosophy-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .philosophy-item .icon {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .philosophy-item h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--blue-dark);
+        }
+
+        .philosophy-item p {
+            font-size: 0.88rem;
+            color: #777;
+            line-height: 1.6;
+        }
+
+        /* ============ COUNTDOWN SECTION ============ */
+        .countdown-section {
+            padding: 5rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, var(--snow) 0%, #e8eef5 50%, var(--snow) 100%);
+            position: relative;
+        }
+
+        .anniversary-badge {
+            display: inline-block;
+            padding: 8px 24px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(49, 130, 189, 0.3);
+        }
+
+        .years-together {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            background: linear-gradient(135deg, var(--pink-dark) 0%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .years-label {
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 2.5rem;
+        }
+
+        .countdown-grid {
+            display: flex;
+            justify-content: center;
+            gap: clamp(1rem, 3vw, 2rem);
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .countdown-item {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            min-width: 100px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--pink), var(--blue));
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 700;
+            color: var(--blue-dark);
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.8rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        .next-anniversary-date {
+            font-size: 0.95rem;
+            color: #888;
+            margin-top: 1rem;
+        }
+
+        .next-anniversary-date strong {
+            color: var(--blue);
+        }
+
+        /* ============ SPECIAL MESSAGE ============ */
+        .message-section {
+            padding: 5rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(225, 142, 150, 0.08) 0%, rgba(49, 130, 189, 0.08) 100%);
+        }
+
+        .message-heart {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: heartbeat 1.5s ease infinite;
+        }
+
+        .message-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, #2a3a5a 100%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .footer .names {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ============ SNOWFLAKES & FLOWERS ============ */
+        .floating-elements {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: rgba(49, 130, 189, 0.15);
+            font-size: 1rem;
+            animation: snowfall linear infinite;
+        }
+
+        .flower-petal {
+            position: absolute;
+            color: rgba(225, 142, 150, 0.15);
+            font-size: 1rem;
+            animation: petalFall linear infinite;
+        }
+
+        /* ============ ANIMATIONS ============ */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+
+        @keyframes rotateGradient {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+        }
+
+        @keyframes sparkleAnim {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: scale(1) rotate(180deg) translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+
+        @keyframes snowfall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes petalFall {
+            0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateY(50vh) rotate(180deg) translateX(30px); }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg) translateX(-20px); opacity: 0; }
+        }
+
+        @keyframes floatSnow {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes floatIsland {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) rotate(-360deg); opacity: 0; }
+        }
+
+        /* Reveal animation class */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 600px) {
+            .padlock-container {
+                transform: scale(0.85);
+            }
+
+            .mascot-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .countdown-item {
+                min-width: 75px;
+                padding: 1rem 0.8rem;
+            }
+
+            .philosophy-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== LOCK SCREEN ====== -->
+    <div id="lock-screen">
+        <!-- Floating particles -->
+        <div id="lock-particles"></div>
+
+        <h1 class="lock-title">Between Island and Snow</h1>
+        <p class="lock-subtitle">Enter the key to our world ✨</p>
+
+        <div class="padlock-container" id="padlock">
+            <div class="padlock-shackle"></div>
+            <div class="padlock-body">
+                <div class="keyhole"></div>
+            </div>
+        </div>
+
+        <div class="password-area">
+            <input 
+                type="password" 
+                class="password-input" 
+                id="password-input" 
+                placeholder="••••" 
+                maxlength="10"
+                autocomplete="off"
+            >
+            <button class="unlock-btn" id="unlock-btn">Unlock 🔓</button>
+            <p class="error-msg" id="error-msg">&nbsp;</p>
+        </div>
+    </div>
+
+    <!-- ====== SPARKLE OVERLAY ====== -->
+    <div class="sparkle-overlay" id="sparkle-overlay"></div>
+
+    <!-- ====== FLOATING ELEMENTS ====== -->
+    <div class="floating-elements" id="floating-elements"></div>
+
+    <!-- ====== DASHBOARD ====== -->
+    <div id="dashboard">
+
+        <!-- Hero -->
+        <section class="hero">
+            <h1 class="hero-title reveal">
+                Between <span class="island-text">Island</span> and <span class="snow-text">Snow</span>
+            </h1>
+            <div class="hero-divider reveal"></div>
+            <p class="hero-message reveal">A story of two worlds, one love 💕</p>
+
+            <div class="scroll-indicator">
+                <span>Scroll Down</span>
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </div>
+        </section>
+
+        <!-- Mascot Section -->
+        <section class="mascot-section" id="mascots">
+            <h2 class="section-title reveal">Meet Our Mascots</h2>
+            <p class="section-subtitle reveal">Two little characters from different worlds, brought together by love</p>
+
+            <div class="mascot-image-container reveal">
+                <img src="mascot.png" alt="Lolo and Jojo" onerror="this.style.display='none'">
+            </div>
+
+            <div class="mascot-cards">
+                <!-- LOLO -->
+                <div class="mascot-card lolo reveal">
+                    <div class="mascot-emoji">🌺🐭</div>
+                    <h3 class="mascot-name">Lolo</h3>
+                    <span class="mascot-title-tag">The Island Girl</span>
+                    <div class="mascot-stats">
+                        <span class="mascot-stat">🎂 October 13</span>
+                        <span class="mascot-stat">📏 150 cm</span>
+                        <span class="mascot-stat">🌸 Pink</span>
+                        <span class="mascot-stat">🏝️ Indonesia</span>
+                    </div>
+                    <p class="mascot-desc">
+                        Lolo the Island Girl is a small, lively mouse, standing just 150 cm tall with bright black eyes that sparkle with curiosity. She is pink all over, reflecting her love for the color and her warm, cheerful personality. Lolo is two years younger than Jojo, and she was born on October 13, just a few days after him. She is called the Island Girl because she comes from Indonesia, a little world full of sunshine and life. Inspired by Jerry from Tom and Jerry, which she loved watching as a child, Lolo is playful, talkative, humble, and loves to share her endless stories—so many that she often makes Jojo a little dizzy! Her energy brings joy and laughter, and even small moments with her feel lively and special.
+                    </p>
+                </div>
+
+                <!-- JOJO -->
+                <div class="mascot-card jojo reveal">
+                    <div class="mascot-emoji">❄️🐱</div>
+                    <h3 class="mascot-name">Jojo</h3>
+                    <span class="mascot-title-tag">The Snowy Guy</span>
+                    <div class="mascot-stats">
+                        <span class="mascot-stat">🎂 October 4</span>
+                        <span class="mascot-stat">📏 184 cm</span>
+                        <span class="mascot-stat">💙 Blue</span>
+                        <span class="mascot-stat">🏔️ Slovenia</span>
+                    </div>
+                    <p class="mascot-desc">
+                        Jojo the Snowy Guy is a tall and friendly cat, standing at 184 cm with striking green eyes that sparkle with warmth and humor. His favorite color is blue, reflecting his calm, cool, and steady personality. He is two years older than Lolo, born on October 4 in Slovenia, a land of snowy winter region. Inspired by Tom from Tom and Jerry, Jojo may seem quiet and reserved, but underneath he carries a gentle heart and a love for his little Island Girl. Together with Lolo, they prove that even the coldest snow can melt with the warmth of island sunshine.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Philosophy Section -->
+        <section class="philosophy-section" id="philosophy">
+            <div class="philosophy-content">
+                <h2 class="section-title reveal">Our Philosophy</h2>
+                <p class="section-subtitle reveal">The meaning behind Island and Snow</p>
+
+                <p class="philosophy-quote reveal">
+                    Like an island surrounded by warm seas and a mountain draped in snow, we come from different worlds—yet somehow, our hearts found the same rhythm. The island brings warmth, color, and life; the snow brings calm, strength, and wonder. Together, we are a beautiful balance.
+                </p>
+
+                <div class="philosophy-details">
+                    <div class="philosophy-item reveal">
+                        <div class="icon">🏝️</div>
+                        <h3>The Island</h3>
+                        <p>Represents warmth, energy, and the vibrant spirit of Indonesia. Lolo carries the sunshine wherever she goes, filling every moment with color and joy.</p>
+                    </div>
+                    <div class="philosophy-item reveal">
+                        <div class="icon">❄️</div>
+                        <h3>The Snow</h3>
+                        <p>Represents calm, depth, and the quiet beauty of Slovenia. Jojo brings peace and steadiness, a gentle presence that makes everything feel safe.</p>
+                    </div>
+                    <div class="philosophy-item reveal">
+                        <div class="icon">💕</div>
+                        <h3>Together</h3>
+                        <p>Two different worlds creating one beautiful love story. The warmth of the island melts the snow, and the coolness of winter calms the tropical storm.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Countdown Section -->
+        <section class="countdown-section" id="countdown">
+            <h2 class="section-title reveal">Our Journey Together</h2>
+            <p class="section-subtitle reveal">Every day with you is a gift</p>
+
+            <div class="anniversary-badge reveal" id="anniversary-badge">💕 Anniversary</div>
+            <div class="years-together reveal" id="years-together">0 Years</div>
+            <p class="years-label reveal">of love and counting...</p>
+
+            <div class="countdown-grid reveal">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="cd-days">000</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="cd-hours">00</div>
+                    <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="cd-minutes">00</div>
+                    <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="cd-seconds">00</div>
+                    <div class="countdown-label">Seconds</div>
+                </div>
+            </div>
+
+            <p class="next-anniversary-date reveal" id="next-anniv-text"></p>
+        </section>
+
+        <!-- Special Message -->
+        <section class="message-section">
+            <div class="message-heart reveal">💗</div>
+            <h2 class="section-title reveal">Forever My Partner</h2>
+            <div class="hero-divider reveal" style="margin: 1rem auto;"></div>
+            <p class="hero-message reveal" style="margin-top: 1rem;">Lolo & Jojo — between island and snow, our love keeps growing 🌺❄️</p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="names">Lolo 🌺 & Jojo ❄️</p>
+            <p>Between Island and Snow — Since August 22, 2004</p>
+        </footer>
+    </div>
+
+    <script>
+        // ====== CONFIG ======
+        const CORRECT_PASSWORD = '1234';
+        const ANNIVERSARY_DATE = new Date(2004, 7, 22); // August 22, 2004 (month is 0-indexed)
+
+        // ====== LOCK SCREEN PARTICLES ======
+        function createLockParticles() {
+            const container = document.getElementById('lock-particles');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.classList.add(Math.random() > 0.5 ? 'snow-p' : 'island-p');
+                const size = Math.random() * 8 + 4;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.bottom = '-20px';
+                p.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                p.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        // ====== UNLOCK LOGIC ======
+        const passwordInput = document.getElementById('password-input');
+        const unlockBtn = document.getElementById('unlock-btn');
+        const errorMsg = document.getElementById('error-msg');
+        const padlock = document.getElementById('padlock');
+        const lockScreen = document.getElementById('lock-screen');
+        const dashboard = document.getElementById('dashboard');
+
+        function attemptUnlock() {
+            const pwd = passwordInput.value;
+            if (pwd === CORRECT_PASSWORD) {
+                errorMsg.innerHTML = '&nbsp;';
+                // Unlock animation
+                padlock.classList.add('unlocking');
+                passwordInput.disabled = true;
+                unlockBtn.disabled = true;
+
+                // Create sparkles
+                setTimeout(() => createSparkles(), 400);
+
+                // Transition to dashboard
+                setTimeout(() => {
+                    lockScreen.classList.add('unlocked');
+                }, 1000);
+
+                setTimeout(() => {
+                    lockScreen.classList.add('hidden');
+                    dashboard.classList.add('visible');
+                    initDashboard();
+                    createFloatingElements();
+                }, 2200);
+
+            } else {
+                errorMsg.textContent = 'Wrong password, try again 💔';
+                passwordInput.classList.add('error');
+                padlock.classList.add('shake');
+                setTimeout(() => {
+                    passwordInput.classList.remove('error');
+                    padlock.classList.remove('shake');
+                }, 500);
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        unlockBtn.addEventListener('click', attemptUnlock);
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') attemptUnlock();
+        });
+
+        // ====== SPARKLE EFFECT ======
+        function createSparkles() {
+            const overlay = document.getElementById('sparkle-overlay');
+            const colors = ['#E18E96', '#3182BD', '#f0b8bd', '#5da4d9', '#FFD700', '#fff'];
+            const rect = padlock.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const s = document.createElement('div');
+                s.classList.add('sparkle');
+                const size = Math.random() * 10 + 4;
+                const angle = (Math.PI * 2 / 30) * i;
+                const dist = Math.random() * 150 + 80;
+                const tx = Math.cos(angle) * dist;
+                const ty = Math.sin(angle) * dist;
+
+                s.style.width = size + 'px';
+                s.style.height = size + 'px';
+                s.style.left = cx + 'px';
+                s.style.top = cy + 'px';
+                s.style.background = colors[Math.floor(Math.random() * colors.length)];
+                s.style.setProperty('--tx', tx + 'px');
+                s.style.setProperty('--ty', ty + 'px');
+                s.style.animationDelay = (Math.random() * 0.3) + 's';
+                overlay.appendChild(s);
+            }
+
+            setTimeout(() => { overlay.innerHTML = ''; }, 2000);
+        }
+
+        // ====== FLOATING SNOWFLAKES & PETALS (Dashboard) ======
+        function createFloatingElements() {
+            const container = document.getElementById('floating-elements');
+            const snowflakes = ['❄', '❅', '❆', '✧'];
+            const petals = ['🌸', '🌺', '✿', '❀'];
+
+            for (let i = 0; i < 8; i++) {
+                // Snowflake
+                const sf = document.createElement('div');
+                sf.classList.add('snowflake');
+                sf.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+                sf.style.left = (Math.random() * 50 + 50) + '%';
+                sf.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                sf.style.animationDelay = (Math.random() * 10) + 's';
+                sf.style.fontSize = (Math.random() * 0.8 + 0.6) + 'rem';
+                container.appendChild(sf);
+
+                // Flower petal
+                const fp = document.createElement('div');
+                fp.classList.add('flower-petal');
+                fp.textContent = petals[Math.floor(Math.random() * petals.length)];
+                fp.style.left = (Math.random() * 50) + '%';
+                fp.style.animationDuration = (Math.random() * 10 + 12) + 's';
+                fp.style.animationDelay = (Math.random() * 10) + 's';
+                fp.style.fontSize = (Math.random() * 0.8 + 0.6) + 'rem';
+                container.appendChild(fp);
+            }
+        }
+
+        // ====== SCROLL REVEAL ======
+        function initReveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('active');
+                        }, index * 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+            reveals.forEach(el => observer.observe(el));
+        }
+
+        // ====== ANNIVERSARY COUNTDOWN ======
+        function updateCountdown() {
+            const now = new Date();
+            const annivMonth = ANNIVERSARY_DATE.getMonth();
+            const annivDay = ANNIVERSARY_DATE.getDate();
+            const annivYear = ANNIVERSARY_DATE.getFullYear();
+
+            // Calculate years together
+            let yearsTogether = now.getFullYear() - annivYear;
+            const annivThisYear = new Date(now.getFullYear(), annivMonth, annivDay);
+            if (now < annivThisYear) {
+                yearsTogether--;
+            }
+
+            document.getElementById('years-together').textContent = yearsTogether + (yearsTogether === 1 ? ' Year' : ' Years');
+            document.getElementById('anniversary-badge').textContent = '💕 ' + ordinal(yearsTogether) + ' Anniversary';
+
+            // Next anniversary
+            let nextAnniv = new Date(now.getFullYear(), annivMonth, annivDay);
+            if (now >= nextAnniv) {
+                nextAnniv = new Date(now.getFullYear() + 1, annivMonth, annivDay);
+            }
+
+            const diff = nextAnniv - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').textContent = String(days).padStart(3, '0');
+            document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
+
+            const nextYear = nextAnniv.getFullYear() - annivYear;
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('next-anniv-text').innerHTML = 
+                'Next anniversary: <strong>' + nextAnniv.toLocaleDateString('en-US', options) + '</strong> — ' + ordinal(nextYear) + ' year together 🎉';
+        }
+
+        function ordinal(n) {
+            const s = ['th', 'st', 'nd', 'rd'];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        // ====== INIT DASHBOARD ======
+        function initDashboard() {
+            initReveal();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        // ====== INIT ======
+        createLockParticles();
+        passwordInput.focus();
+    </script>
+</body>
+</html>
