@@ -643,6 +643,30 @@
             line-height: 1.6;
         }
 
+        .philosophy-house {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .philosophy-house img {
+            max-width: 100%;
+            width: 450px;
+            border-radius: 20px;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
+            transition: transform 0.4s ease;
+        }
+
+        .philosophy-house img:hover {
+            transform: scale(1.03);
+        }
+
+        .philosophy-house-caption {
+            margin-top: 1rem;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.1rem;
+            color: #888;
+        }
+
         /* ====== GLOBE DISTANCE SECTION ====== */
         .globe-section {
             padding: 5rem 2rem 3rem;
@@ -902,6 +926,507 @@
             font-size: 3rem;
             margin-bottom: 1rem;
             animation: heartbeat 1.5s ease infinite;
+        }
+
+        /* ====== LOVE LETTER / ENVELOPE SECTION ====== */
+        .letter-section {
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(180deg, #fdf6f0 0%, #fff5f5 30%, #f0e6f0 60%, #e8eef5 100%);
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        .letter-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(225, 142, 150, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(49, 130, 189, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .letter-section .section-title {
+            color: var(--pink-dark);
+        }
+
+        .letter-section .section-subtitle {
+            color: #999;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Envelope */
+        .envelope-wrapper {
+            position: relative;
+            width: 340px;
+            height: 420px;
+            margin: 0 auto 1rem;
+            cursor: pointer;
+        }
+
+        .envelope {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 230px;
+            perspective: 800px;
+            overflow: visible;
+            filter: drop-shadow(0 10px 35px rgba(196, 106, 115, 0.35));
+            transition: filter 0.4s ease;
+        }
+
+        .envelope:hover {
+            filter: drop-shadow(0 14px 45px rgba(196, 106, 115, 0.45));
+        }
+
+        /* --- Envelope back (full rectangle behind everything) --- */
+        .envelope-back {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(160deg, #d4878f 0%, #c46a73 100%);
+            border-radius: 6px;
+            z-index: 1;
+        }
+
+        /* --- Letter paper: starts inside, slides up --- */
+        .letter-paper {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(180deg, #ffffff 0%, #fef9f6 100%);
+            border-radius: 6px 6px 4px 4px;
+            padding: 22px 20px;
+            z-index: 2;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+            transition: transform 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+        }
+
+        .letter-paper-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .letter-paper-line {
+            height: 2px;
+            background: linear-gradient(90deg, #f0d8d8, #e8c4c4);
+            border-radius: 2px;
+        }
+
+        .letter-paper-line:nth-child(1) { width: 65%; }
+        .letter-paper-line:nth-child(2) { width: 90%; }
+        .letter-paper-line:nth-child(3) { width: 78%; }
+        .letter-paper-line:nth-child(4) { width: 85%; }
+        .letter-paper-line:nth-child(5) { width: 60%; }
+        .letter-paper-line:nth-child(6) { width: 72%; }
+
+        .letter-paper-heart {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-top: 12px;
+            opacity: 0.7;
+        }
+
+        /* --- Envelope front: V-shaped top like a real envelope --- */
+        .envelope-front {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            clip-path: polygon(0 35%, 50% 0%, 100% 35%, 100% 100%, 0 100%);
+        }
+
+        /* Front face: the main visible part */
+        .envelope-front-face {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(170deg, #e8a0a8 0%, #d98a93 40%, #cc7a84 100%);
+            border-radius: 0 0 6px 6px;
+        }
+
+        /* Left fold shadow */
+        .envelope-front-face::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 50%; height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.06) 0%, transparent 50%);
+        }
+
+        /* Right fold shadow */
+        .envelope-front-face::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 50%; height: 100%;
+            background: linear-gradient(225deg, rgba(0,0,0,0.04) 0%, transparent 50%);
+        }
+
+        /* --- Flap (triangular lid on top) --- */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 130px;
+            z-index: 4;
+            transform-origin: center top;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .envelope-flap-shape {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #bf6870 0%, #c87a82 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+        }
+
+        /* Envelope tap hint */
+        .envelope-hint {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.85rem;
+            color: var(--pink);
+            animation: hintFade 2s ease-in-out infinite;
+        }
+
+        @keyframes hintFade {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ========= FLAP OPEN STATE (step 1) ========= */
+        .envelope-wrapper.flap-open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-wrapper.flap-open .envelope-hint {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ========= LETTER OUT STATE (step 2) ========= */
+        .envelope-wrapper.letter-out .letter-paper {
+            transform: translateX(-50%) translateY(-220px);
+        }
+
+        /* Full letter modal overlay */
+        .letter-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .letter-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .letter-full {
+            background: linear-gradient(180deg, #fffaf5 0%, #fff8f0 100%);
+            border-radius: 16px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 3rem 2.5rem;
+            position: relative;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            animation: letterSlideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            transform: translateY(50px);
+            opacity: 0;
+        }
+
+        @keyframes letterSlideUp {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Decorative top border */
+        .letter-full::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--pink), var(--pink-light), var(--blue-light), var(--blue));
+            border-radius: 16px 16px 0 0;
+        }
+
+        /* Decorative wax seal */
+        .letter-wax {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(225, 142, 150, 0.4), inset 0 -2px 6px rgba(0,0,0,0.1);
+        }
+
+        .letter-dear {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.6rem;
+            color: var(--pink-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .letter-body p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.92rem;
+            line-height: 1.9;
+            color: #555;
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .letter-body .letter-highlight {
+            color: var(--pink-dark);
+            font-weight: 500;
+        }
+
+        .letter-body .letter-verse {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: #777;
+            padding-left: 1.5rem;
+            border-left: 3px solid var(--pink-light);
+            margin: 1.5rem 0;
+        }
+
+        .letter-body .letter-bold {
+            font-weight: 600;
+            color: var(--blue-dark);
+        }
+
+        .letter-signature {
+            text-align: right;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(225, 142, 150, 0.2);
+        }
+
+        .letter-signature .sig-heart {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .letter-signature .sig-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            color: var(--pink-dark);
+        }
+
+        .letter-close-btn {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #999;
+            z-index: 10;
+        }
+
+        .letter-close-btn:hover {
+            background: rgba(225, 142, 150, 0.15);
+            color: var(--pink-dark);
+            transform: rotate(90deg);
+        }
+
+        /* Letter floating hearts */
+        .letter-hearts-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .letter-float-heart {
+            position: absolute;
+            font-size: 1rem;
+            opacity: 0.06;
+            animation: letterHeartFloat linear infinite;
+        }
+
+        @keyframes letterHeartFloat {
+            0% { transform: translateY(100%) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.06; }
+            90% { opacity: 0.06; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Scrollbar for letter */
+        .letter-full::-webkit-scrollbar {
+            width: 6px;
+        }
+        .letter-full::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .letter-full::-webkit-scrollbar-thumb {
+            background: var(--pink-light);
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .letter-section {
+                padding: 3rem 1rem 2.5rem;
+                min-height: auto;
+            }
+            .envelope-wrapper {
+                width: 280px;
+                height: 360px;
+            }
+            .envelope {
+                height: 190px;
+            }
+            .envelope-flap {
+                height: 108px;
+            }
+            .letter-paper {
+                width: 248px;
+                height: 165px;
+                padding: 16px;
+            }
+            .envelope-wrapper.letter-out .letter-paper {
+                transform: translateX(-50%) translateY(-170px);
+            }
+            .letter-full {
+                padding: 2rem 1.5rem;
+                max-height: 90vh;
+                border-radius: 12px;
+            }
+            .letter-overlay {
+                padding: 1rem;
+            }
+            .letter-dear {
+                font-size: 1.3rem;
+            }
+            .letter-body p {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ====== QR CODE SECTION ====== */
+        .qr-section {
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(180deg, #0d1b2a 0%, #1b2838 50%, #0d1b2a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(225, 142, 150, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(49, 130, 189, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .qr-container {
+            margin: 2rem auto;
+            width: fit-content;
+            position: relative;
+        }
+
+        .qr-image {
+            width: 260px;
+            height: 260px;
+            object-fit: contain;
+            border-radius: 20px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            filter: drop-shadow(0 10px 40px rgba(225, 142, 150, 0.3));
+        }
+
+        .qr-image:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 15px 50px rgba(225, 142, 150, 0.5));
+        }
+
+        .qr-button {
+            display: inline-block;
+            padding: 14px 36px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(225, 142, 150, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .qr-button:hover::before {
+            left: 100%;
+        }
+
+        .qr-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(225, 142, 150, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .qr-section {
+                padding: 3rem 1.5rem 2.5rem;
+            }
+            .qr-image {
+                width: 200px;
+                height: 200px;
+            }
+            .qr-button {
+                padding: 12px 28px;
+                font-size: 0.9rem;
+            }
         }
 
         /* ====== FOOTER ====== */
@@ -1387,10 +1912,13 @@
                         <p>Two different worlds creating one beautiful love story. The warmth of the island melts the snow, and the coolness of winter calms the tropical storm.</p>
                     </div>
                 </div>
+
+                <div class="philosophy-house reveal">
+                    <img src="house.jpg" alt="Our Dream Home">
+                    <p class="philosophy-house-caption">Our little dream — a home where island warmth meets snowy nights 🏡</p>
+                </div>
             </div>
         </section>
-
-        <!-- Globe Distance Section -->
         <section class="globe-section" id="distance">
             <h2 class="section-title reveal">Our Distance</h2>
             <p class="section-subtitle reveal">13,536 miles apart — yet our hearts are always close</p>
@@ -1471,6 +1999,97 @@
             <p class="hero-message reveal" style="margin-top: 1rem;">Lolo & Jojo — between island and snow, our love keeps growing 🌺❄️</p>
         </section>
 
+        <!-- Love Letter Section -->
+        <section class="letter-section" id="love-letter">
+            <h2 class="section-title reveal">A Letter For You</h2>
+            <p class="section-subtitle reveal">I wrote something from my heart — tap the envelope to read</p>
+
+            <div class="envelope-wrapper reveal" id="envelope" onclick="openEnvelope()">
+                <!-- Envelope -->
+                <div class="envelope">
+                    <!-- Back layer -->
+                    <div class="envelope-back"></div>
+
+                    <!-- Letter paper (between back and front, slides up) -->
+                    <div class="letter-paper">
+                        <div class="letter-paper-lines">
+                            <div class="letter-paper-line"></div>
+                            <div class="letter-paper-line"></div>
+                            <div class="letter-paper-line"></div>
+                            <div class="letter-paper-line"></div>
+                            <div class="letter-paper-line"></div>
+                            <div class="letter-paper-line"></div>
+                        </div>
+                        <div class="letter-paper-heart">💌</div>
+                    </div>
+
+                    <!-- Front face (covers the letter) -->
+                    <div class="envelope-front">
+                        <div class="envelope-front-face"></div>
+                    </div>
+
+                    <!-- Flap (triangular lid) -->
+                    <div class="envelope-flap">
+                        <div class="envelope-flap-shape"></div>
+                    </div>
+                </div>
+
+                <p class="envelope-hint">✨ Tap to open ✨</p>
+            </div>
+        </section>
+
+        <!-- Letter Overlay (modal) -->
+        <div class="letter-overlay" id="letter-overlay" onclick="closeLetterOverlay(event)">
+            <div class="letter-full" id="letter-full" onclick="event.stopPropagation()">
+                <button class="letter-close-btn" onclick="closeLetter()">✕</button>
+                <div class="letter-wax">🤍</div>
+                <div class="letter-dear">Dear, Jonathan Prah</div>
+                <div class="letter-body">
+                    <p>I’ve been staring at this page for a while, trying to find the right way to start. I don’t think there’s a perfect beginning for something that means this much. So maybe I’ll just start simply—with you.</p>
+                    <p class="letter-highlight">This website exists because of you.</p>
+                    <p>I didn’t build it alone. Dedes and her boyfriend helped me bring it to life, but every single detail inside it carries my feelings for you. Every color choice, every little character, every idea about island and snow… it’s all connected to us. I wanted to create something you could open whenever you miss me. Something that feels like a small piece of my heart, carefully wrapped and sent across the world to you.</p>
+                    <p class="letter-verse">Sometimes I still can’t believe our story is real.</p>
+                    <p>You were born under snowy skies, on October 4th, in a place so different from mine. I was born on October 13th, just nine days after you, on a warm island surrounded by ocean air and sunlight. You are two years older than me, taller, calmer, steadier. I am smaller, louder, always talking, always telling stories that never seem to end.</p>
+                    <p>And somehow, despite all of that—despite the distance, the cultures, the languages, the time zones—<span class="letter-bold">we found each other.</span></p>
+                    <p>It feels like something out of a story. The Island Girl and the Snowy Guy. Pink and blue. Warmth and winter. Noise and silence. And instead of clashing, we fit.</p>
+                    <p>I know loving each other from far away is not easy. There are nights when I wish I could just rest my head on your shoulder instead of my pillow. There are days when I wish I could see your green eyes in front of me instead of through a screen. There are moments when the distance feels heavy, like something physical pressing against my chest. But even in those moments, <span class="letter-highlight">I have never doubted my feelings for you.</span></p>
+                    <p class="letter-verse">You are my calm when my thoughts are too loud.<br>You are my steady when my emotions run wild.<br>You are the one who listens to my endless stories—even when they make no sense, even when they go on forever, even when they probably make you dizzy. And you still stay.</p>
+                    <p>You don’t just hear me. You <span class="letter-bold">listen.</span><br>You don’t just talk to me. You <span class="letter-bold">understand</span> me.<br>And that is rare.</p>
+                    <p>I love the way you are gentle without trying too hard. I love the way you joke quietly, the way your humor isn’t loud but always there. I love that you are strong but soft at the same time. I love that you are blue—not just because it’s your favorite color, but because it fits you. Calm, deep, steady.</p>
+                    <p>And I know I can be chaotic. I know I can overthink. I know I can be dramatic and emotional and talk too much. But you never make me feel like I am <em>too much.</em> You never make me feel small. You make me feel safe being exactly who I am.</p>
+                    <p class="letter-highlight">That’s something I will always be grateful for.</p>
+                    <p>This website is small compared to what I feel for you. It’s just pixels and code and designs. But behind it is effort. Behind it is time. Behind it is my heart trying to say, <span class="letter-bold">“You matter to me more than you know.”</span></p>
+                    <p>Loving you has taught me patience. It has taught me trust. It has taught me that real love is not about convenience—it’s about commitment. It’s about choosing each other even when it would be easier not to. It’s about staying even when the distance feels unfair.</p>
+                    <p class="letter-verse">And I choose you.<br>Not because it’s easy.<br>Not because it’s perfect.<br>But because it’s <strong>you.</strong></p>
+                    <p>When I imagine the future, I don’t see just miles and airports and countdowns. I see us laughing in the same room one day. I see simple mornings. I see quiet evenings. I see you teasing me. I see myself still talking too much while you pretend to complain but secretly smile.</p>
+                    <p>I don’t know exactly what our future will look like. I don’t know how long this distance will test us. But I know this—<span class="letter-highlight">what we have is real.</span> And I am willing to protect it.</p>
+                    <p>From my island to your snow, from my pink chaos to your blue calm, from my October heart to yours—<span class="letter-bold">thank you.</span></p>
+                    <p class="letter-verse">Thank you for loving me.<br>Thank you for staying.<br>Thank you for being patient with me.<br>Thank you for choosing me.</p>
+                    <p>No matter how far the map stretches between Indonesia and Slovenia, my heart will always know where home is.</p>
+                    <p class="letter-highlight" style="font-size: 1rem;">With you. Always. 🤍</p>
+                </div>
+                <div class="letter-signature">
+                    <span class="sig-heart">💕</span>
+                    <span class="sig-name">— Dannisa Alodya Cheryl</span>
+                </div>
+                <div class="letter-hearts-bg" id="letter-hearts-bg"></div>
+            </div>
+        </div>
+
+        <!-- Our Story QR Section -->
+        <section class="qr-section" id="our-story">
+            <h2 class="section-title reveal" style="color: #e0eaf5;">Our Story</h2>
+            <p class="section-subtitle reveal" style="color: rgba(255,255,255,0.5);">Scan or tap to read our prologue</p>
+            <div class="qr-container reveal">
+                <a href="https://medium.com/@dannisaalodyacheryl/prologue-7cb83a742436" target="_blank" rel="noopener noreferrer">
+                    <img src="qrcode.png" alt="QR Code - Our Story" class="qr-image">
+                </a>
+            </div>
+            <a href="https://medium.com/@dannisaalodyacheryl/prologue-7cb83a742436" target="_blank" rel="noopener noreferrer" class="qr-button reveal">
+                📖 Read Our Prologue
+            </a>
+        </section>
+
         <!-- Footer -->
         <footer class="footer">
             <p class="names">Lolo 🌺 & Jojo ❄️</p>
@@ -1480,7 +2099,7 @@
 
     <script>
         // ============ CONFIG ============
-        const CORRECT_PASSWORD = '1234';
+        const CORRECT_PASSWORD = '9925';
         const ANNIVERSARY_DATE = new Date(2025, 8, 9); // September 9, 2025
 
         // ============ LOCK SCREEN PARTICLES ============
@@ -2046,6 +2665,78 @@
 
         createLockParticles();
         passwordInput.focus();
+
+        // ============ ENVELOPE / LETTER INTERACTION ============
+        function openEnvelope() {
+            const env = document.getElementById('envelope');
+            if (env.classList.contains('flap-open')) return;
+            const flap = env.querySelector('.envelope-flap');
+
+            // Step 1: Flap opens (folds backward)
+            env.classList.add('flap-open');
+
+            // After flap animation finishes, drop z-index so it goes behind
+            setTimeout(() => {
+                flap.style.zIndex = '0';
+            }, 800);
+
+            // Step 2: After flap fully opens + small pause, letter slides up
+            setTimeout(() => {
+                env.classList.add('letter-out');
+            }, 1100);
+
+            // Step 3: After letter slides out, show full letter overlay
+            setTimeout(() => {
+                const overlay = document.getElementById('letter-overlay');
+                overlay.style.display = 'flex';
+                requestAnimationFrame(() => {
+                    overlay.classList.add('show');
+                });
+                createLetterHearts();
+            }, 2400);
+        }
+
+        function closeLetterOverlay(e) {
+            if (e.target === document.getElementById('letter-overlay')) {
+                closeLetter();
+            }
+        }
+
+        function closeLetter() {
+            const overlay = document.getElementById('letter-overlay');
+            overlay.classList.remove('show');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                const env = document.getElementById('envelope');
+                const flap = env.querySelector('.envelope-flap');
+
+                // Step 1: Letter slides back down into envelope
+                env.classList.remove('letter-out');
+
+                // Step 2: After letter is back inside, restore flap z-index and close it
+                setTimeout(() => {
+                    flap.style.zIndex = '4';
+                    env.classList.remove('flap-open');
+                }, 1000);
+            }, 500);
+        }
+
+        function createLetterHearts() {
+            const container = document.getElementById('letter-hearts-bg');
+            if (!container) return;
+            container.innerHTML = '';
+            const hearts = ['❤️', '💕', '🌸', '❄️', '🤍', '💖'];
+            for (let i = 0; i < 15; i++) {
+                const h = document.createElement('div');
+                h.classList.add('letter-float-heart');
+                h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                h.style.left = Math.random() * 100 + '%';
+                h.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                h.style.animationDelay = (Math.random() * 8) + 's';
+                h.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
+                container.appendChild(h);
+            }
+        }
     </script>
 </body>
 </html>
