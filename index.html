@@ -15,25 +15,20 @@
             --pink-dark: #c46a73;
             --snow: #f0f4f8;
             --island: #fff5f5;
+            --gold: #ffd700;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
             background: var(--snow);
         }
 
-        /* ============ LOCK SCREEN ============ */
+        /* ====================================================
+           LOCK SCREEN
+        ==================================================== */
         #lock-screen {
             position: fixed;
             top: 0; left: 0;
@@ -44,18 +39,18 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, var(--pink-light) 0%, var(--snow) 50%, var(--blue-light) 100%);
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
 
         #lock-screen.unlocked {
             opacity: 0;
-            transform: scale(1.1);
+            transform: scale(1.15);
             pointer-events: none;
+            filter: blur(5px);
         }
 
-        #lock-screen.hidden {
-            display: none;
-        }
+        #lock-screen.hidden { display: none; }
 
         .lock-title {
             font-family: 'Playfair Display', serif;
@@ -72,85 +67,184 @@
             font-family: 'Dancing Script', cursive;
             font-size: 1.2rem;
             color: var(--pink-dark);
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             opacity: 0;
             animation: fadeInDown 1s ease forwards 0.6s;
         }
 
-        /* SVG Padlock */
-        .padlock-container {
+        /* ====== SVG PADLOCK (Premium) ====== */
+        .padlock-wrapper {
             position: relative;
-            width: 120px;
-            height: 160px;
-            margin-bottom: 2rem;
+            width: 150px;
+            height: 200px;
+            margin-bottom: 2.5rem;
             opacity: 0;
-            animation: fadeInUp 1s ease forwards 0.5s;
-            cursor: pointer;
+            animation: fadeInUp 1s ease forwards 0.5s, padlockFloat 3s ease-in-out infinite 1.5s;
+            transition: transform 0.6s ease, filter 0.4s ease;
         }
 
-        .padlock-body {
+        .padlock-wrapper.anim-ready {
+            opacity: 1;
+            animation: none;
+        }
+
+        .padlock-glow {
             position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 25px rgba(49, 130, 189, 0.4);
-        }
-
-        .keyhole {
-            width: 14px;
-            height: 14px;
-            background: var(--snow);
+            top: 50%; left: 50%;
+            width: 180px; height: 180px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(49,130,189,0.15) 0%, transparent 70%);
             border-radius: 50%;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        .padlock-svg {
+            width: 150px;
+            height: 200px;
+            filter: drop-shadow(0 10px 30px rgba(49, 130, 189, 0.3));
             position: relative;
+            z-index: 2;
         }
 
-        .keyhole::after {
-            content: '';
+        .padlock-svg .shackle-path {
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: 105px 95px;
+        }
+
+        .padlock-wrapper.unlocking .shackle-path {
+            transform: rotate(-40deg) translateY(-18px);
+        }
+
+        .padlock-wrapper.unlocked-full {
+            transform: scale(1.1);
+            filter: brightness(1.3);
+        }
+
+        .padlock-wrapper.unlocked-full .shackle-path {
+            transform: rotate(-40deg) translateY(-18px);
+            opacity: 0.5;
+        }
+
+        .padlock-wrapper.fly-away {
+            transform: scale(0) rotate(20deg);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Keyhole glow on unlock */
+        .keyhole-glow {
             position: absolute;
-            top: 10px;
+            top: 58%; left: 50%;
+            width: 0; height: 0;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,215,0,0) 70%);
+            border-radius: 50%;
+            z-index: 3;
+            transition: all 0.6s ease;
+            pointer-events: none;
+        }
+
+        .padlock-wrapper.unlocking .keyhole-glow {
+            width: 100px; height: 100px;
+            background: radial-gradient(circle, rgba(255,215,0,0.9) 0%, rgba(255,215,0,0) 70%);
+        }
+
+        .padlock-wrapper.unlocked-full .keyhole-glow {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,215,0,0.3) 40%, rgba(49,130,189,0) 70%);
+        }
+
+        .padlock-wrapper.fly-away .keyhole-glow {
+            width: 600px; height: 600px;
+            opacity: 0;
+            transition: all 1s ease;
+        }
+
+        /* Heart burst from keyhole */
+        .heart-burst {
+            position: absolute;
+            top: 55%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .heart-burst .mini-heart {
+            position: absolute;
+            font-size: 1.2rem;
+            opacity: 0;
+        }
+
+        .padlock-wrapper.unlocking .mini-heart {
+            animation: heartBurst 1.5s ease forwards;
+        }
+
+        /* Unlock success text */
+        .unlock-success-text {
+            position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            width: 6px;
-            height: 14px;
-            background: var(--snow);
-            border-radius: 0 0 3px 3px;
+            bottom: -40px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2rem;
+            color: var(--gold);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        .padlock-shackle {
+        .padlock-wrapper.unlocking .unlock-success-text {
+            opacity: 1;
+            transform: translateX(-50%) translateY(5px);
+        }
+
+        .padlock-wrapper.fly-away .unlock-success-text {
+            opacity: 0;
+        }
+
+        /* Glow ring animation for unlock */
+        .glow-ring {
             position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 56px;
-            height: 60px;
-            border: 8px solid var(--blue);
-            border-bottom: none;
-            border-radius: 30px 30px 0 0;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: right bottom;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 3px solid rgba(255, 215, 0, 0.6);
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0;
+            transition: all 0.8s ease;
         }
 
-        .padlock-container.unlocking .padlock-shackle {
-            transform: translateX(-50%) rotate(-30deg) translateY(-10px);
+        .padlock-wrapper.unlocking .glow-ring {
+            width: 200px; height: 200px;
+            opacity: 1;
         }
 
-        .padlock-container.shake {
-            animation: shake 0.5s ease;
+        .padlock-wrapper.unlocked-full .glow-ring {
+            width: 350px; height: 350px;
+            opacity: 0;
+            border-color: rgba(49, 130, 189, 0.3);
         }
 
-        /* Floating particles on lock screen */
+        .padlock-wrapper.shake {
+            animation: padlockShake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        /* Lock screen floating particles */
+        #lock-particles {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
         .particle {
             position: absolute;
             border-radius: 50%;
             pointer-events: none;
-            opacity: 0.3;
+            opacity: 0;
         }
 
         .particle.snow-p {
@@ -163,6 +257,7 @@
             animation: floatIsland linear infinite;
         }
 
+        /* Password area */
         .password-area {
             display: flex;
             flex-direction: column;
@@ -173,38 +268,39 @@
         }
 
         .password-input {
-            width: 220px;
-            padding: 12px 20px;
-            border: 2px solid rgba(49, 130, 189, 0.3);
+            width: 240px;
+            padding: 14px 24px;
+            border: 2px solid rgba(49, 130, 189, 0.25);
             border-radius: 50px;
             font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
+            font-size: 1.1rem;
             text-align: center;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
             outline: none;
-            transition: all 0.3s ease;
-            letter-spacing: 8px;
+            transition: all 0.4s ease;
+            letter-spacing: 10px;
             color: var(--blue-dark);
         }
 
         .password-input::placeholder {
-            letter-spacing: 2px;
-            color: #aaa;
+            letter-spacing: 3px;
+            color: #bbb;
         }
 
         .password-input:focus {
             border-color: var(--blue);
-            box-shadow: 0 0 20px rgba(49, 130, 189, 0.2);
+            box-shadow: 0 0 0 4px rgba(49, 130, 189, 0.1), 0 0 20px rgba(49, 130, 189, 0.15);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .password-input.error {
             border-color: #e74c3c;
-            animation: shake 0.5s ease;
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
         }
 
         .unlock-btn {
-            padding: 10px 40px;
+            padding: 12px 48px;
             background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
             color: white;
             border: none;
@@ -214,22 +310,37 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(49, 130, 189, 0.3);
+            box-shadow: 0 4px 20px rgba(49, 130, 189, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
-        .unlock-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(49, 130, 189, 0.4);
+        .unlock-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transition: left 0.5s ease;
         }
+
+        .unlock-btn:hover::before { left: 100%; }
+
+        .unlock-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(49, 130, 189, 0.4);
+        }
+
+        .unlock-btn:active { transform: translateY(-1px); }
 
         .error-msg {
             color: #e74c3c;
             font-size: 0.85rem;
             height: 20px;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
         }
 
-        /* ============ SPARKLE EFFECT ON UNLOCK ============ */
+        /* ====== SPARKLE / CONFETTI OVERLAY ====== */
         .sparkle-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -240,24 +351,28 @@
 
         .sparkle {
             position: absolute;
-            width: 8px;
-            height: 8px;
             border-radius: 50%;
-            animation: sparkleAnim 1.5s ease forwards;
+            animation: sparkleAnim 1.8s ease forwards;
         }
 
-        /* ============ DASHBOARD ============ */
+        .sparkle-star {
+            position: absolute;
+            animation: sparkleStarAnim 1.5s ease forwards;
+            font-size: 1rem;
+        }
+
+        /* ====================================================
+           DASHBOARD
+        ==================================================== */
         #dashboard {
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 1.2s ease;
             min-height: 100vh;
         }
 
-        #dashboard.visible {
-            opacity: 1;
-        }
+        #dashboard.visible { opacity: 1; }
 
-        /* Hero Section */
+        /* ====== HERO SECTION ====== */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -270,16 +385,45 @@
             padding: 2rem;
         }
 
+        /* Hero canvas for snow & leaf particles */
+        #hero-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .hero::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 20% 20%, rgba(225, 142, 150, 0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(49, 130, 189, 0.08) 0%, transparent 50%);
-            animation: rotateGradient 20s linear infinite;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 20% 20%, rgba(225, 142, 150, 0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(49, 130, 189, 0.06) 0%, transparent 50%);
+            animation: rotateGradient 30s linear infinite;
+        }
+
+        /* Decorative circles in hero */
+        .hero-deco-left, .hero-deco-right {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-deco-left {
+            top: 10%; left: -5%;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(225, 142, 150, 0.08) 0%, transparent 70%);
+            animation: floatDeco 8s ease-in-out infinite;
+        }
+
+        .hero-deco-right {
+            bottom: 10%; right: -5%;
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(49, 130, 189, 0.08) 0%, transparent 70%);
+            animation: floatDeco 8s ease-in-out infinite 4s;
         }
 
         .hero-title {
@@ -288,18 +432,13 @@
             color: var(--blue-dark);
             text-align: center;
             position: relative;
-            z-index: 1;
+            z-index: 2;
             opacity: 0;
             transform: translateY(30px);
         }
 
-        .hero-title .island-text {
-            color: var(--pink-dark);
-        }
-
-        .hero-title .snow-text {
-            color: var(--blue);
-        }
+        .hero-title .island-text { color: var(--pink-dark); }
+        .hero-title .snow-text { color: var(--blue); }
 
         .hero-message {
             font-family: 'Dancing Script', cursive;
@@ -307,7 +446,7 @@
             color: var(--pink);
             margin-top: 1rem;
             position: relative;
-            z-index: 1;
+            z-index: 2;
             opacity: 0;
             transform: translateY(30px);
         }
@@ -315,10 +454,10 @@
         .hero-divider {
             width: 200px;
             height: 2px;
-            background: linear-gradient(90deg, var(--pink), var(--blue));
+            background: linear-gradient(90deg, var(--pink), transparent, var(--blue));
             margin: 1.5rem 0;
             position: relative;
-            z-index: 1;
+            z-index: 2;
             opacity: 0;
         }
 
@@ -334,17 +473,16 @@
             color: var(--blue-light);
             font-size: 0.85rem;
             opacity: 0;
-            animation: bounce 2s ease infinite 2s;
-            z-index: 1;
+            animation: bounce 2s ease infinite 2.5s;
+            z-index: 2;
         }
 
         .scroll-indicator svg {
-            width: 24px;
-            height: 24px;
+            width: 24px; height: 24px;
             fill: var(--blue-light);
         }
 
-        /* ============ MASCOT SECTION ============ */
+        /* ====== MASCOT SECTION ====== */
         .mascot-section {
             padding: 5rem 2rem;
             max-width: 1100px;
@@ -402,10 +540,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
 
-        .mascot-card.lolo {
-            border-top: 4px solid var(--pink);
-        }
-
+        .mascot-card.lolo { border-top: 4px solid var(--pink); }
         .mascot-card.lolo::before {
             content: '';
             position: absolute;
@@ -416,10 +551,7 @@
             transform: translate(30%, -30%);
         }
 
-        .mascot-card.jojo {
-            border-top: 4px solid var(--blue);
-        }
-
+        .mascot-card.jojo { border-top: 4px solid var(--blue); }
         .mascot-card.jojo::before {
             content: '';
             position: absolute;
@@ -430,24 +562,15 @@
             transform: translate(30%, -30%);
         }
 
-        .mascot-emoji {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
+        .mascot-emoji { font-size: 3rem; margin-bottom: 1rem; }
 
         .mascot-name {
             font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
             margin-bottom: 0.3rem;
         }
-
-        .mascot-card.lolo .mascot-name {
-            color: var(--pink-dark);
-        }
-
-        .mascot-card.jojo .mascot-name {
-            color: var(--blue-dark);
-        }
+        .mascot-card.lolo .mascot-name { color: var(--pink-dark); }
+        .mascot-card.jojo .mascot-name { color: var(--blue-dark); }
 
         .mascot-title-tag {
             font-size: 0.85rem;
@@ -457,16 +580,8 @@
             padding: 4px 14px;
             border-radius: 20px;
         }
-
-        .mascot-card.lolo .mascot-title-tag {
-            background: rgba(225, 142, 150, 0.15);
-            color: var(--pink-dark);
-        }
-
-        .mascot-card.jojo .mascot-title-tag {
-            background: rgba(49, 130, 189, 0.15);
-            color: var(--blue-dark);
-        }
+        .mascot-card.lolo .mascot-title-tag { background: rgba(225, 142, 150, 0.15); color: var(--pink-dark); }
+        .mascot-card.jojo .mascot-title-tag { background: rgba(49, 130, 189, 0.15); color: var(--blue-dark); }
 
         .mascot-stats {
             display: flex;
@@ -489,7 +604,7 @@
             color: #555;
         }
 
-        /* ============ PHILOSOPHY SECTION ============ */
+        /* ====== PHILOSOPHY SECTION ====== */
         .philosophy-section {
             padding: 5rem 2rem;
             background: linear-gradient(135deg, rgba(225, 142, 150, 0.05) 0%, rgba(49, 130, 189, 0.05) 100%);
@@ -514,7 +629,7 @@
         }
 
         .philosophy-quote::before {
-            content: '"';
+            content: '\201C';
             font-size: 4rem;
             color: var(--pink-light);
             position: absolute;
@@ -544,10 +659,7 @@
             transform: translateY(20px);
         }
 
-        .philosophy-item .icon {
-            font-size: 2rem;
-            margin-bottom: 0.8rem;
-        }
+        .philosophy-item .icon { font-size: 2rem; margin-bottom: 0.8rem; }
 
         .philosophy-item h3 {
             font-family: 'Playfair Display', serif;
@@ -562,7 +674,7 @@
             line-height: 1.6;
         }
 
-        /* ============ COUNTDOWN SECTION ============ */
+        /* ====== COUNTDOWN SECTION ====== */
         .countdown-section {
             padding: 5rem 2rem;
             text-align: center;
@@ -645,12 +757,9 @@
             color: #888;
             margin-top: 1rem;
         }
+        .next-anniversary-date strong { color: var(--blue); }
 
-        .next-anniversary-date strong {
-            color: var(--blue);
-        }
-
-        /* ============ SPECIAL MESSAGE ============ */
+        /* ====== SPECIAL MESSAGE ====== */
         .message-section {
             padding: 5rem 2rem;
             text-align: center;
@@ -663,18 +772,7 @@
             animation: heartbeat 1.5s ease infinite;
         }
 
-        .message-text {
-            font-family: 'Dancing Script', cursive;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* ============ FOOTER ============ */
+        /* ====== FOOTER ====== */
         .footer {
             padding: 2rem;
             text-align: center;
@@ -682,7 +780,6 @@
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.85rem;
         }
-
         .footer .names {
             font-family: 'Dancing Script', cursive;
             font-size: 1.3rem;
@@ -690,7 +787,7 @@
             margin-bottom: 0.5rem;
         }
 
-        /* ============ SNOWFLAKES & FLOWERS ============ */
+        /* ====== GLOBAL FLOATING ELEMENTS ====== */
         .floating-elements {
             position: fixed;
             top: 0; left: 0;
@@ -714,28 +811,63 @@
             animation: petalFall linear infinite;
         }
 
-        /* ============ ANIMATIONS ============ */
+        /* ====================================================
+           KEYFRAME ANIMATIONS
+        ==================================================== */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-10px); }
-            40% { transform: translateX(10px); }
-            60% { transform: translateX(-10px); }
-            80% { transform: translateX(10px); }
+        @keyframes padlockFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes unlockBounce {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.15); }
+            50% { transform: scale(0.95); }
+            70% { transform: scale(1.08); }
+            100% { transform: scale(1.1); }
+        }
+
+        @keyframes successPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 30px 15px rgba(255,215,0,0.2); }
+            100% { box-shadow: 0 0 0 0 rgba(255,215,0,0); }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+
+        @keyframes padlockShake {
+            10%, 90% { transform: translateX(-1px) rotate(-1deg); }
+            20%, 80% { transform: translateX(2px) rotate(1deg); }
+            30%, 50%, 70% { transform: translateX(-4px) rotate(-2deg); }
+            40%, 60% { transform: translateX(4px) rotate(2deg); }
+        }
+
+        @keyframes heartBurst {
+            0% { transform: translate(0, 0) scale(0); opacity: 0; }
+            20% { opacity: 1; transform: translate(var(--hx), var(--hy)) scale(1); }
+            100% { transform: translate(calc(var(--hx) * 3), calc(var(--hy) * 3 - 40px)) scale(0); opacity: 0; }
         }
 
         @keyframes rotateGradient {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        @keyframes floatDeco {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
         }
 
         @keyframes bounce {
@@ -755,6 +887,12 @@
             0% { transform: scale(0) rotate(0deg); opacity: 1; }
             50% { opacity: 1; }
             100% { transform: scale(1) rotate(180deg) translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+
+        @keyframes sparkleStarAnim {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            30% { opacity: 1; transform: scale(1.3) rotate(90deg) translate(var(--tx), var(--ty)); }
+            100% { transform: scale(0) rotate(360deg) translate(calc(var(--tx) * 2), calc(var(--ty) * 2 - 50px)); opacity: 0; }
         }
 
         @keyframes snowfall {
@@ -786,81 +924,116 @@
             100% { transform: translateY(-10vh) rotate(-360deg); opacity: 0; }
         }
 
-        /* Reveal animation class */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+
+        /* Reveal animation */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
             transition: opacity 0.8s ease, transform 0.8s ease;
         }
-
         .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* ============ RESPONSIVE ============ */
+        /* ====== RESPONSIVE ====== */
         @media (max-width: 600px) {
-            .padlock-container {
-                transform: scale(0.85);
-            }
-
-            .mascot-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .countdown-item {
-                min-width: 75px;
-                padding: 1rem 0.8rem;
-            }
-
-            .philosophy-details {
-                grid-template-columns: 1fr;
-            }
+            .padlock-wrapper { transform: scale(0.8); }
+            .mascot-cards { grid-template-columns: 1fr; }
+            .countdown-item { min-width: 75px; padding: 1rem 0.8rem; }
+            .philosophy-details { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ====== LOCK SCREEN ====== -->
+    <!-- ============ LOCK SCREEN ============ -->
     <div id="lock-screen">
-        <!-- Floating particles -->
         <div id="lock-particles"></div>
 
         <h1 class="lock-title">Between Island and Snow</h1>
         <p class="lock-subtitle">Enter the key to our world ✨</p>
 
-        <div class="padlock-container" id="padlock">
-            <div class="padlock-shackle"></div>
-            <div class="padlock-body">
-                <div class="keyhole"></div>
-            </div>
+        <!-- Premium SVG Padlock -->
+        <div class="padlock-wrapper" id="padlock">
+            <div class="padlock-glow"></div>
+            <div class="keyhole-glow"></div>
+
+            <svg class="padlock-svg" viewBox="0 0 150 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="bodyGrad" x1="25" y1="90" x2="125" y2="190" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#3182BD"/>
+                        <stop offset="100%" stop-color="#1e5a8a"/>
+                    </linearGradient>
+                    <linearGradient id="shackleGrad" x1="40" y1="20" x2="110" y2="95" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#5da4d9"/>
+                        <stop offset="100%" stop-color="#3182BD"/>
+                    </linearGradient>
+                    <linearGradient id="bodyShine" x1="30" y1="90" x2="75" y2="190" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
+                        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                    </linearGradient>
+                    <filter id="lockShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1e5a8a" flood-opacity="0.3"/>
+                    </filter>
+                </defs>
+
+                <!-- Shackle -->
+                <path class="shackle-path" d="M45 95 V55 C45 30, 105 30, 105 55 V95"
+                      stroke="url(#shackleGrad)" stroke-width="12" stroke-linecap="round" fill="none"/>
+
+                <!-- Body -->
+                <rect x="25" y="90" width="100" height="80" rx="14" fill="url(#bodyGrad)" filter="url(#lockShadow)"/>
+                <!-- Body shine -->
+                <rect x="25" y="90" width="100" height="80" rx="14" fill="url(#bodyShine)"/>
+                <!-- Body border highlight -->
+                <rect x="26" y="91" width="98" height="78" rx="13" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+
+                <!-- Keyhole -->
+                <circle cx="75" cy="125" r="9" fill="#f0f4f8"/>
+                <path d="M75 132 L71 148 Q75 152 79 148 L75 132Z" fill="#f0f4f8"/>
+
+                <!-- Keyhole inner shadow -->
+                <circle cx="75" cy="125" r="5" fill="rgba(30,90,138,0.2)"/>
+            </svg>
+
+            <!-- Heart burst container -->
+            <div class="heart-burst" id="heart-burst"></div>
+            <!-- Glow ring -->
+            <div class="glow-ring"></div>
+            <!-- Success text -->
+            <div class="unlock-success-text">Unlocked! ✨</div>
         </div>
 
         <div class="password-area">
-            <input 
-                type="password" 
-                class="password-input" 
-                id="password-input" 
-                placeholder="••••" 
-                maxlength="10"
-                autocomplete="off"
-            >
+            <input type="password" class="password-input" id="password-input" placeholder="••••" maxlength="10" autocomplete="off">
             <button class="unlock-btn" id="unlock-btn">Unlock 🔓</button>
             <p class="error-msg" id="error-msg">&nbsp;</p>
         </div>
     </div>
 
-    <!-- ====== SPARKLE OVERLAY ====== -->
+    <!-- ============ SPARKLE OVERLAY ============ -->
     <div class="sparkle-overlay" id="sparkle-overlay"></div>
 
-    <!-- ====== FLOATING ELEMENTS ====== -->
+    <!-- ============ GLOBAL FLOATING ELEMENTS ============ -->
     <div class="floating-elements" id="floating-elements"></div>
 
-    <!-- ====== DASHBOARD ====== -->
+    <!-- ============ DASHBOARD ============ -->
     <div id="dashboard">
 
         <!-- Hero -->
-        <section class="hero">
+        <section class="hero" id="hero-section">
+            <canvas id="hero-canvas"></canvas>
+            <div class="hero-deco-left"></div>
+            <div class="hero-deco-right"></div>
+
             <h1 class="hero-title reveal">
                 Between <span class="island-text">Island</span> and <span class="snow-text">Snow</span>
             </h1>
@@ -883,7 +1056,6 @@
             </div>
 
             <div class="mascot-cards">
-                <!-- LOLO -->
                 <div class="mascot-card lolo reveal">
                     <div class="mascot-emoji">🌺🐭</div>
                     <h3 class="mascot-name">Lolo</h3>
@@ -899,7 +1071,6 @@
                     </p>
                 </div>
 
-                <!-- JOJO -->
                 <div class="mascot-card jojo reveal">
                     <div class="mascot-emoji">❄️🐱</div>
                     <h3 class="mascot-name">Jojo</h3>
@@ -994,29 +1165,46 @@
     </div>
 
     <script>
-        // ====== CONFIG ======
+        // ============ CONFIG ============
         const CORRECT_PASSWORD = '1234';
-        const ANNIVERSARY_DATE = new Date(2004, 7, 22); // August 22, 2004 (month is 0-indexed)
+        const ANNIVERSARY_DATE = new Date(2004, 7, 22); // August 22, 2004
 
-        // ====== LOCK SCREEN PARTICLES ======
+        // ============ LOCK SCREEN PARTICLES ============
         function createLockParticles() {
             const container = document.getElementById('lock-particles');
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 30; i++) {
                 const p = document.createElement('div');
                 p.classList.add('particle');
                 p.classList.add(Math.random() > 0.5 ? 'snow-p' : 'island-p');
-                const size = Math.random() * 8 + 4;
+                const size = Math.random() * 8 + 3;
                 p.style.width = size + 'px';
                 p.style.height = size + 'px';
                 p.style.left = Math.random() * 100 + '%';
                 p.style.bottom = '-20px';
                 p.style.animationDuration = (Math.random() * 8 + 6) + 's';
-                p.style.animationDelay = (Math.random() * 5) + 's';
+                p.style.animationDelay = (Math.random() * 6) + 's';
                 container.appendChild(p);
             }
         }
 
-        // ====== UNLOCK LOGIC ======
+        // ============ HEART BURST (on unlock) ============
+        function createHeartBurst() {
+            const container = document.getElementById('heart-burst');
+            const hearts = ['💕', '💖', '💗', '💘', '✨', '🌸', '❄️', '💝'];
+            for (let i = 0; i < 12; i++) {
+                const h = document.createElement('div');
+                h.classList.add('mini-heart');
+                h.textContent = hearts[i % hearts.length];
+                const angle = (Math.PI * 2 / 12) * i;
+                const dist = 25 + Math.random() * 20;
+                h.style.setProperty('--hx', (Math.cos(angle) * dist) + 'px');
+                h.style.setProperty('--hy', (Math.sin(angle) * dist) + 'px');
+                h.style.animationDelay = (Math.random() * 0.3) + 's';
+                container.appendChild(h);
+            }
+        }
+
+        // ============ UNLOCK LOGIC ============
         const passwordInput = document.getElementById('password-input');
         const unlockBtn = document.getElementById('unlock-btn');
         const errorMsg = document.getElementById('error-msg');
@@ -1028,25 +1216,49 @@
             const pwd = passwordInput.value;
             if (pwd === CORRECT_PASSWORD) {
                 errorMsg.innerHTML = '&nbsp;';
-                // Unlock animation
-                padlock.classList.add('unlocking');
                 passwordInput.disabled = true;
                 unlockBtn.disabled = true;
+                unlockBtn.textContent = '💖';
 
-                // Create sparkles
-                setTimeout(() => createSparkles(), 400);
+                // IMPORTANT: Freeze padlock visible before stopping animation
+                padlock.classList.add('anim-ready');
 
-                // Transition to dashboard
+                // Step 1 (300ms): Bounce + Shackle opens + keyhole glow + hearts
                 setTimeout(() => {
-                    lockScreen.classList.add('unlocked');
+                    padlock.style.animation = 'unlockBounce 0.6s ease forwards';
+                    padlock.classList.add('unlocking');
+                    createHeartBurst();
+                }, 300);
+
+                // Step 2 (1000ms): Sparkles & confetti burst from padlock
+                setTimeout(() => {
+                    createSparkles();
+                    createConfetti();
                 }, 1000);
 
+                // Step 3 (1600ms): Full glow expansion
+                setTimeout(() => {
+                    padlock.classList.add('unlocked-full');
+                    padlock.style.animation = 'successPulse 0.8s ease';
+                }, 1600);
+
+                // Step 4 (2400ms): Padlock flies away
+                setTimeout(() => {
+                    padlock.classList.add('fly-away');
+                }, 2400);
+
+                // Step 5 (3000ms): Fade lock screen
+                setTimeout(() => {
+                    lockScreen.classList.add('unlocked');
+                }, 3000);
+
+                // Step 6 (4200ms): Show dashboard
                 setTimeout(() => {
                     lockScreen.classList.add('hidden');
                     dashboard.classList.add('visible');
                     initDashboard();
                     createFloatingElements();
-                }, 2200);
+                }, 4200);
 
             } else {
                 errorMsg.textContent = 'Wrong password, try again 💔';
@@ -1055,7 +1267,7 @@
                 setTimeout(() => {
                     passwordInput.classList.remove('error');
                     padlock.classList.remove('shake');
-                }, 500);
+                }, 600);
                 passwordInput.value = '';
                 passwordInput.focus();
             }
@@ -1066,20 +1278,21 @@
             if (e.key === 'Enter') attemptUnlock();
         });
 
-        // ====== SPARKLE EFFECT ======
+        // ============ SPARKLE BURST ============
         function createSparkles() {
             const overlay = document.getElementById('sparkle-overlay');
-            const colors = ['#E18E96', '#3182BD', '#f0b8bd', '#5da4d9', '#FFD700', '#fff'];
+            const colors = ['#E18E96', '#3182BD', '#f0b8bd', '#5da4d9', '#FFD700', '#fff', '#ff69b4', '#ffd700'];
             const rect = padlock.getBoundingClientRect();
             const cx = rect.left + rect.width / 2;
             const cy = rect.top + rect.height / 2;
 
-            for (let i = 0; i < 30; i++) {
+            // Wave 1: Fast small sparkles
+            for (let i = 0; i < 50; i++) {
                 const s = document.createElement('div');
                 s.classList.add('sparkle');
-                const size = Math.random() * 10 + 4;
-                const angle = (Math.PI * 2 / 30) * i;
-                const dist = Math.random() * 150 + 80;
+                const size = Math.random() * 10 + 2;
+                const angle = (Math.PI * 2 / 50) * i + Math.random() * 0.5;
+                const dist = Math.random() * 250 + 50;
                 const tx = Math.cos(angle) * dist;
                 const ty = Math.sin(angle) * dist;
 
@@ -1091,42 +1304,252 @@
                 s.style.setProperty('--tx', tx + 'px');
                 s.style.setProperty('--ty', ty + 'px');
                 s.style.animationDelay = (Math.random() * 0.3) + 's';
+                s.style.borderRadius = Math.random() > 0.3 ? '50%' : '2px';
                 overlay.appendChild(s);
             }
 
-            setTimeout(() => { overlay.innerHTML = ''; }, 2000);
+            // Wave 2: Delayed bigger sparkles
+            setTimeout(() => {
+                for (let i = 0; i < 25; i++) {
+                    const s = document.createElement('div');
+                    s.classList.add('sparkle');
+                    const size = Math.random() * 14 + 5;
+                    const angle = (Math.PI * 2 / 25) * i;
+                    const dist = Math.random() * 180 + 100;
+                    const tx = Math.cos(angle) * dist;
+                    const ty = Math.sin(angle) * dist - 30;
+
+                    s.style.width = size + 'px';
+                    s.style.height = size + 'px';
+                    s.style.left = cx + 'px';
+                    s.style.top = cy + 'px';
+                    s.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    s.style.setProperty('--tx', tx + 'px');
+                    s.style.setProperty('--ty', ty + 'px');
+                    s.style.animationDelay = (Math.random() * 0.2) + 's';
+                    s.style.borderRadius = '50%';
+                    overlay.appendChild(s);
+                }
+            }, 400);
+
+            setTimeout(() => { overlay.innerHTML = ''; }, 3500);
         }
 
-        // ====== FLOATING SNOWFLAKES & PETALS (Dashboard) ======
+        // ============ CONFETTI EFFECT ============
+        function createConfetti() {
+            const overlay = document.getElementById('sparkle-overlay');
+            const emojis = ['✨', '💕', '🌸', '❄️', '💖', '⭐', '🌺', '💗', '🦋', '💝'];
+            const rect = padlock.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 20; i++) {
+                const s = document.createElement('div');
+                s.classList.add('sparkle-star');
+                s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                const angle = (Math.PI * 2 / 20) * i + Math.random() * 0.5;
+                const dist = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * dist;
+                const ty = Math.sin(angle) * dist;
+
+                s.style.left = cx + 'px';
+                s.style.top = cy + 'px';
+                s.style.setProperty('--tx', tx + 'px');
+                s.style.setProperty('--ty', ty + 'px');
+                s.style.animationDelay = (Math.random() * 0.6) + 's';
+                s.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
+                overlay.appendChild(s);
+            }
+        }
+
+        // ============ HERO CANVAS: SNOW & LEAF PARTICLE SYSTEM ============
+        let heroAnimId = null;
+
+        function initHeroCanvas() {
+            const canvas = document.getElementById('hero-canvas');
+            const hero = document.getElementById('hero-section');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = hero.offsetWidth;
+                canvas.height = hero.offsetHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            // Snowflake particles (right side)
+            const snowflakes = [];
+            for (let i = 0; i < 35; i++) {
+                snowflakes.push({
+                    x: canvas.width * 0.4 + Math.random() * canvas.width * 0.65,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 3 + 1,
+                    speedY: Math.random() * 0.6 + 0.2,
+                    speedX: Math.random() * 0.3 - 0.15,
+                    opacity: Math.random() * 0.4 + 0.1,
+                    swing: Math.random() * Math.PI * 2,
+                    swingSpeed: Math.random() * 0.02 + 0.005,
+                    swingDist: Math.random() * 30 + 10,
+                });
+            }
+
+            // Leaf / petal particles (left side)
+            const leaves = [];
+            for (let i = 0; i < 20; i++) {
+                leaves.push({
+                    x: Math.random() * canvas.width * 0.6,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 8 + 4,
+                    speedY: Math.random() * 0.5 + 0.15,
+                    speedX: Math.random() * 0.2 - 0.1,
+                    rotation: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 0.02,
+                    opacity: Math.random() * 0.25 + 0.08,
+                    swing: Math.random() * Math.PI * 2,
+                    swingSpeed: Math.random() * 0.015 + 0.005,
+                    swingDist: Math.random() * 40 + 15,
+                    type: Math.random() > 0.5 ? 'petal' : 'leaf',
+                });
+            }
+
+            function drawSnowflake(sf) {
+                ctx.save();
+                ctx.globalAlpha = sf.opacity;
+                ctx.fillStyle = '#5da4d9';
+                ctx.shadowColor = 'rgba(93, 164, 217, 0.3)';
+                ctx.shadowBlur = 6;
+
+                const x = sf.x + Math.sin(sf.swing) * sf.swingDist;
+                const r = sf.r;
+
+                if (r > 2) {
+                    // Detailed snowflake with branches
+                    ctx.strokeStyle = 'rgba(93, 164, 217, ' + sf.opacity + ')';
+                    ctx.lineWidth = 0.8;
+                    ctx.beginPath();
+                    for (let k = 0; k < 6; k++) {
+                        const angle = (Math.PI / 3) * k;
+                        ctx.moveTo(x, sf.y);
+                        ctx.lineTo(x + Math.cos(angle) * r * 2.5, sf.y + Math.sin(angle) * r * 2.5);
+                        // Small branches
+                        const bx = x + Math.cos(angle) * r * 1.5;
+                        const by = sf.y + Math.sin(angle) * r * 1.5;
+                        ctx.moveTo(bx, by);
+                        ctx.lineTo(bx + Math.cos(angle + 0.5) * r, by + Math.sin(angle + 0.5) * r);
+                        ctx.moveTo(bx, by);
+                        ctx.lineTo(bx + Math.cos(angle - 0.5) * r, by + Math.sin(angle - 0.5) * r);
+                    }
+                    ctx.stroke();
+
+                    // Center dot
+                    ctx.beginPath();
+                    ctx.arc(x, sf.y, r * 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Simple dot snowflake
+                    ctx.beginPath();
+                    ctx.arc(x, sf.y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+
+            function drawLeaf(leaf) {
+                ctx.save();
+                const x = leaf.x + Math.sin(leaf.swing) * leaf.swingDist;
+                ctx.translate(x, leaf.y);
+                ctx.rotate(leaf.rotation);
+                ctx.globalAlpha = leaf.opacity;
+
+                if (leaf.type === 'petal') {
+                    // Cherry blossom petal
+                    ctx.fillStyle = '#E18E96';
+                    ctx.shadowColor = 'rgba(225, 142, 150, 0.2)';
+                    ctx.shadowBlur = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -leaf.size / 2);
+                    ctx.bezierCurveTo(leaf.size / 2, -leaf.size / 2, leaf.size / 2, leaf.size / 3, 0, leaf.size / 2);
+                    ctx.bezierCurveTo(-leaf.size / 2, leaf.size / 3, -leaf.size / 2, -leaf.size / 2, 0, -leaf.size / 2);
+                    ctx.fill();
+                } else {
+                    // Tropical leaf
+                    ctx.fillStyle = 'rgba(225, 142, 150, 0.6)';
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, leaf.size * 0.4, leaf.size, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Leaf vein
+                    ctx.strokeStyle = 'rgba(196, 106, 115, 0.3)';
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -leaf.size);
+                    ctx.lineTo(0, leaf.size);
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Update & draw snowflakes
+                for (const sf of snowflakes) {
+                    sf.y += sf.speedY;
+                    sf.swing += sf.swingSpeed;
+                    if (sf.y > canvas.height + 10) {
+                        sf.y = -10;
+                        sf.x = canvas.width * 0.4 + Math.random() * canvas.width * 0.65;
+                    }
+                    drawSnowflake(sf);
+                }
+
+                // Update & draw leaves
+                for (const leaf of leaves) {
+                    leaf.y += leaf.speedY;
+                    leaf.rotation += leaf.rotSpeed;
+                    leaf.swing += leaf.swingSpeed;
+                    if (leaf.y > canvas.height + 20) {
+                        leaf.y = -20;
+                        leaf.x = Math.random() * canvas.width * 0.6;
+                    }
+                    drawLeaf(leaf);
+                }
+
+                heroAnimId = requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        // ============ GLOBAL FLOATING ELEMENTS (subtle bg) ============
         function createFloatingElements() {
             const container = document.getElementById('floating-elements');
             const snowflakes = ['❄', '❅', '❆', '✧'];
             const petals = ['🌸', '🌺', '✿', '❀'];
 
-            for (let i = 0; i < 8; i++) {
-                // Snowflake
+            for (let i = 0; i < 10; i++) {
                 const sf = document.createElement('div');
                 sf.classList.add('snowflake');
                 sf.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
                 sf.style.left = (Math.random() * 50 + 50) + '%';
-                sf.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                sf.style.animationDelay = (Math.random() * 10) + 's';
-                sf.style.fontSize = (Math.random() * 0.8 + 0.6) + 'rem';
+                sf.style.animationDuration = (Math.random() * 12 + 10) + 's';
+                sf.style.animationDelay = (Math.random() * 12) + 's';
+                sf.style.fontSize = (Math.random() * 0.8 + 0.5) + 'rem';
                 container.appendChild(sf);
 
-                // Flower petal
                 const fp = document.createElement('div');
                 fp.classList.add('flower-petal');
                 fp.textContent = petals[Math.floor(Math.random() * petals.length)];
                 fp.style.left = (Math.random() * 50) + '%';
-                fp.style.animationDuration = (Math.random() * 10 + 12) + 's';
-                fp.style.animationDelay = (Math.random() * 10) + 's';
-                fp.style.fontSize = (Math.random() * 0.8 + 0.6) + 'rem';
+                fp.style.animationDuration = (Math.random() * 12 + 12) + 's';
+                fp.style.animationDelay = (Math.random() * 12) + 's';
+                fp.style.fontSize = (Math.random() * 0.8 + 0.5) + 'rem';
                 container.appendChild(fp);
             }
         }
 
-        // ====== SCROLL REVEAL ======
+        // ============ SCROLL REVEAL ============
         function initReveal() {
             const reveals = document.querySelectorAll('.reveal');
             const observer = new IntersectionObserver((entries) => {
@@ -1134,37 +1557,30 @@
                     if (entry.isIntersecting) {
                         setTimeout(() => {
                             entry.target.classList.add('active');
-                        }, index * 100);
+                        }, index * 80);
                         observer.unobserve(entry.target);
                     }
                 });
             }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
             reveals.forEach(el => observer.observe(el));
         }
 
-        // ====== ANNIVERSARY COUNTDOWN ======
+        // ============ ANNIVERSARY COUNTDOWN ============
         function updateCountdown() {
             const now = new Date();
             const annivMonth = ANNIVERSARY_DATE.getMonth();
             const annivDay = ANNIVERSARY_DATE.getDate();
             const annivYear = ANNIVERSARY_DATE.getFullYear();
 
-            // Calculate years together
             let yearsTogether = now.getFullYear() - annivYear;
             const annivThisYear = new Date(now.getFullYear(), annivMonth, annivDay);
-            if (now < annivThisYear) {
-                yearsTogether--;
-            }
+            if (now < annivThisYear) yearsTogether--;
 
             document.getElementById('years-together').textContent = yearsTogether + (yearsTogether === 1 ? ' Year' : ' Years');
             document.getElementById('anniversary-badge').textContent = '💕 ' + ordinal(yearsTogether) + ' Anniversary';
 
-            // Next anniversary
             let nextAnniv = new Date(now.getFullYear(), annivMonth, annivDay);
-            if (now >= nextAnniv) {
-                nextAnniv = new Date(now.getFullYear() + 1, annivMonth, annivDay);
-            }
+            if (now >= nextAnniv) nextAnniv = new Date(now.getFullYear() + 1, annivMonth, annivDay);
 
             const diff = nextAnniv - now;
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -1179,7 +1595,7 @@
 
             const nextYear = nextAnniv.getFullYear() - annivYear;
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('next-anniv-text').innerHTML = 
+            document.getElementById('next-anniv-text').innerHTML =
                 'Next anniversary: <strong>' + nextAnniv.toLocaleDateString('en-US', options) + '</strong> — ' + ordinal(nextYear) + ' year together 🎉';
         }
 
@@ -1189,14 +1605,14 @@
             return n + (s[(v - 20) % 10] || s[v] || s[0]);
         }
 
-        // ====== INIT DASHBOARD ======
+        // ============ INIT ============
         function initDashboard() {
             initReveal();
+            initHeroCanvas();
             updateCountdown();
             setInterval(updateCountdown, 1000);
         }
 
-        // ====== INIT ======
         createLockParticles();
         passwordInput.focus();
     </script>
