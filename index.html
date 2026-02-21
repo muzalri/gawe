@@ -2326,69 +2326,6 @@
             <p class="hero-message reveal" style="margin-top: 1rem;">Lolo & Jojo — between island and snow, our love keeps growing 🌺❄️</p>
         </section>
 
-        <!-- Photo Booth Section -->
-        <section class="photobooth-section" id="photo-booth">
-            <h2 class="section-title reveal">Photo Booth</h2>
-            <div class="hero-divider reveal" style="margin: 1rem auto;"></div>
-            <p class="section-subtitle reveal">Take 4 photos together and create your own memory strip 📸</p>
-
-            <div class="live-booth-container reveal">
-                <div class="booth-frame">
-                    <div class="camera-container">
-                        <video id="boothCameraFeed" autoplay playsinline></video>
-                        <canvas id="boothCanvas"></canvas>
-                        <div class="camera-placeholder" id="boothPlaceholder">
-                            📷
-                            <span>Tap "Start Camera" to begin</span>
-                        </div>
-                        <div class="booth-countdown" id="boothCountdown"><span>3</span></div>
-                        <div class="booth-flash" id="boothFlash"></div>
-                        <div class="booth-photo-counter" id="boothPhotoCounter">
-                            <span id="boothPhotoNum">1</span> / 4
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action buttons -->
-                <div class="booth-controls">
-                    <div class="booth-action-btns">
-                        <button class="booth-btn booth-btn-start" id="boothStartBtn" onclick="boothStartCamera()">📷 Start Camera</button>
-                        <button class="booth-btn booth-btn-capture" id="boothCaptureBtn" style="display:none;" onclick="boothCapture()">📸 Capture <span id="boothCaptureCount">(1/4)</span></button>
-                        <button class="booth-btn booth-btn-retake" id="boothRetakeBtn" style="display:none;" onclick="boothReset()">🔄 Retake</button>
-                        <button class="booth-btn booth-btn-download" id="boothDownloadBtn" style="display:none;" onclick="boothDownload()">💾 Download</button>
-                    </div>
-
-                    <!-- Filters -->
-                    <div class="booth-filter-row">
-                        <p>Choose Filter:</p>
-                        <button class="booth-filter-btn active" data-booth-filter="none">Normal</button>
-                        <button class="booth-filter-btn" data-booth-filter="warm">Warm 🌅</button>
-                        <button class="booth-filter-btn" data-booth-filter="pink">Pink 💕</button>
-                        <button class="booth-filter-btn" data-booth-filter="vintage">Vintage 📷</button>
-                        <button class="booth-filter-btn" data-booth-filter="bw">B&W 🖤</button>
-                        <button class="booth-filter-btn" data-booth-filter="cold">Cold ❄️</button>
-                    </div>
-
-                    <!-- Timer -->
-                    <div class="booth-timer-option">
-                        <label><input type="checkbox" id="boothUseTimer" checked> Use 3-second timer</label>
-                    </div>
-                </div>
-
-                <!-- 2x2 Grid preview -->
-                <div class="booth-grid-preview" id="boothGridPreview">
-                    <h3>📸 Your Photo Strip</h3>
-                    <div class="booth-grid-frame" id="boothGridFrame">
-                        <div class="booth-grid-photo" id="boothGrid1"><span>1</span></div>
-                        <div class="booth-grid-photo" id="boothGrid2"><span>2</span></div>
-                        <div class="booth-grid-photo" id="boothGrid3"><span>3</span></div>
-                        <div class="booth-grid-photo" id="boothGrid4"><span>4</span></div>
-                        <div class="booth-grid-watermark">💕 Between Island and Snow 💕</div>
-                    </div>
-                    <canvas id="boothGridCanvas" style="display:none;"></canvas>
-                </div>
-            </div>
-        </section>
 
         <!-- Love Letter Section -->
         <section class="letter-section" id="love-letter">
@@ -2480,6 +2417,71 @@
                 📖 Read Our Prologue
             </a>
         </section>
+
+                <!-- Photo Booth Section -->
+        <section class="photobooth-section" id="photo-booth">
+            <h2 class="section-title reveal">Photo Booth</h2>
+            <div class="hero-divider reveal" style="margin: 1rem auto;"></div>
+            <p class="section-subtitle reveal">Take 4 photos together and create your own memory strip 📸</p>
+
+            <div class="live-booth-container reveal">
+                <div class="booth-frame">
+                    <div class="camera-container">
+                        <video id="boothCameraFeed" autoplay playsinline></video>
+                        <canvas id="boothCanvas"></canvas>
+                        <div class="camera-placeholder" id="boothPlaceholder">
+                            📷
+                            <span>Tap "Start Camera" to begin</span>
+                        </div>
+                        <div class="booth-countdown" id="boothCountdown"><span>3</span></div>
+                        <div class="booth-flash" id="boothFlash"></div>
+                        <div class="booth-photo-counter" id="boothPhotoCounter">
+                            <span id="boothPhotoNum">1</span> / 4
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="booth-controls">
+                    <div class="booth-action-btns">
+                        <button class="booth-btn booth-btn-start" id="boothStartBtn" onclick="boothStartCamera()">📷 Start Camera</button>
+                        <button class="booth-btn booth-btn-capture" id="boothCaptureBtn" style="display:none;" onclick="boothCapture()">📸 Capture <span id="boothCaptureCount">(1/4)</span></button>
+                        <button class="booth-btn booth-btn-retake" id="boothRetakeBtn" style="display:none;" onclick="boothReset()">🔄 Retake</button>
+                        <button class="booth-btn booth-btn-download" id="boothDownloadBtn" style="display:none;" onclick="boothDownload()">💾 Download</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="booth-filter-row">
+                        <p>Choose Filter:</p>
+                        <button class="booth-filter-btn active" data-booth-filter="none">Normal</button>
+                        <button class="booth-filter-btn" data-booth-filter="warm">Warm 🌅</button>
+                        <button class="booth-filter-btn" data-booth-filter="pink">Pink 💕</button>
+                        <button class="booth-filter-btn" data-booth-filter="vintage">Vintage 📷</button>
+                        <button class="booth-filter-btn" data-booth-filter="bw">B&W 🖤</button>
+                        <button class="booth-filter-btn" data-booth-filter="cold">Cold ❄️</button>
+                    </div>
+
+                    <!-- Timer -->
+                    <div class="booth-timer-option">
+                        <label><input type="checkbox" id="boothUseTimer" checked> Use 3-second timer</label>
+                    </div>
+                </div>
+
+                <!-- 2x2 Grid preview -->
+                <div class="booth-grid-preview" id="boothGridPreview">
+                    <h3>📸 Your Photo Strip</h3>
+                    <div class="booth-grid-frame" id="boothGridFrame">
+                        <div class="booth-grid-photo" id="boothGrid1"><span>1</span></div>
+                        <div class="booth-grid-photo" id="boothGrid2"><span>2</span></div>
+                        <div class="booth-grid-photo" id="boothGrid3"><span>3</span></div>
+                        <div class="booth-grid-photo" id="boothGrid4"><span>4</span></div>
+                        <div class="booth-grid-watermark">💕 Between Island and Snow 💕</div>
+                    </div>
+                    <canvas id="boothGridCanvas" style="display:none;"></canvas>
+                </div>
+            </div>
+        </section>
+
 
         <!-- Footer -->
         <footer class="footer">
